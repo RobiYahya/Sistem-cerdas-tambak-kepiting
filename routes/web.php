@@ -3,6 +3,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\RiwayatSensorController;
 use Illuminate\Support\Facades\Route;
 
 // ===== Auth (tampilan saja) =====
@@ -13,7 +14,11 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 // ===== Dashboard =====
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
+// ===== Riwayat Sensor =====
+Route::get('/riwayat-sensor', [RiwayatSensorController::class, 'index'])->name('riwayat-sensor');
+Route::get('/riwayat-sensor/export-csv', [RiwayatSensorController::class, 'exportCsv'])->name('riwayat-sensor.csv');
+
 // Menu lain masih placeholder (hanya tampilan). Arahkan ke dashboard dulu.
-foreach (['riwayat-sensor', 'inferensi-fuzzy', 'kontrol-aktuator', 'notifikasi-alarm', 'kalibrasi-sensor', 'pengaturan'] as $slug) {
+foreach (['inferensi-fuzzy', 'kontrol-aktuator', 'notifikasi-alarm', 'kalibrasi-sensor', 'pengaturan'] as $slug) {
     Route::get("/{$slug}", [DashboardController::class, 'index'])->name($slug);
 }
