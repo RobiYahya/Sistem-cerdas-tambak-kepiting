@@ -9,7 +9,8 @@ export default defineConfig({
             input: ['resources/css/app.css', 
                     'resources/js/app.js',
                     'resources/js/dashboard.js',
-                    'resources/css/aquacrab.css'
+                    'resources/css/aquacrab.css',
+                    
 
             ],
             refresh: true,
