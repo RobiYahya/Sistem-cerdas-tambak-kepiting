@@ -29,7 +29,7 @@ button { font-family: inherit; cursor: pointer; }
 a { text-decoration: none; color: inherit; }
 h1, h2, h3, p { margin: 0; }
 
-.app { display: flex; min-height: 100vh; width: 100%; overflow-x: hidden; }
+.app { display: flex; min-height: 100vh; width: 100%; overflow-x: hidden; user-select: none; }
 
 /* ================= SIDEBAR ================= */
 .sidebar {
@@ -297,22 +297,111 @@ h1, h2, h3, p { margin: 0; }
     .mobile-nav { display: flex !important; }
     .content {
         margin-left: 0 !important;
-        padding: 20px 14px 96px;
+        padding: 20px 14px 120px !important;
         width: 100%;
         max-width: 100vw;
         box-sizing: border-box;
     }
     .page-head h1 {
-        font-size: 24px;
+        font-size: 22px;
         line-height: 1.25;
     }
     .page-head p {
         font-size: 13px;
         margin-top: 4px;
     }
-    .card-status { flex-direction: column; align-items: flex-start; padding-top: 70px; }
-    .gauge { align-self: center; }
-    .sub-index { flex-wrap: wrap; }
+    /* Card status: layout mobile kompak & hemat tempat */
+    /* Baris 1: Judul status (full width) + Pill BAIK di kanan atas */
+    /* Baris 2: Nilai indeks (kiri) & Gauge loading bar (kanan) - SAMPLING-SAMPINGAN */
+    /* Baris 3: Tiga card indeks (kimiawi, osmotik, fisik) di bawah */
+    .card-status {
+        display: grid !important;
+        grid-template-columns: 1fr auto !important;
+        grid-template-rows: auto auto auto !important;
+        align-items: center !important;
+        padding: 18px 16px 20px !important;
+        gap: 12px 10px !important;
+        min-height: unset !important;
+        position: relative !important;
+    }
+    .status-left {
+        display: contents !important;
+    }
+    .status-top {
+        grid-column: 1 / -1 !important;
+        grid-row: 1 !important;
+        width: 100% !important;
+        padding-right: 75px !important; /* Beri ruang untuk pill BAIK di kanan atas */
+    }
+    /* Sisi KIRI baris 2: Nilai indeks */
+    .status-index {
+        grid-column: 1 / 2 !important;
+        grid-row: 2 !important;
+        margin: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+    }
+    .status-index .lbl {
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        color: #e6efe8 !important;
+    }
+    .status-index strong {
+        font-size: 38px !important;
+        font-weight: 700 !important;
+        line-height: 1.05 !important;
+        margin-top: 4px !important;
+        color: #ffffff !important;
+    }
+    /* Sisi KANAN baris 2: Gauge loading bar */
+    .gauge {
+        grid-column: 2 / 3 !important;
+        grid-row: 2 !important;
+        width: 120px !important;
+        height: 120px !important;
+        margin: 0 !important;
+        flex-shrink: 0 !important;
+        justify-self: end !important;
+    }
+    .gauge-text strong { font-size: 24px !important; }
+    .gauge-text span { font-size: 10px !important; }
+
+    /* Baris 3: Card indeks kimiawi, osmotik, fisik DI BAWAH (full width) */
+    .sub-index {
+        grid-column: 1 / -1 !important;
+        grid-row: 3 !important;
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        gap: 6px !important;
+        margin-top: 4px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .sub-box {
+        padding: 8px 6px;
+        flex: 1;
+        min-width: 0;
+        text-align: center;
+        border-radius: 10px;
+    }
+    .sub-box span {
+        font-size: 10px;
+        line-height: 1.2;
+        word-break: break-word;
+    }
+    .sub-box strong {
+        font-size: 15px;
+        margin-top: 4px;
+    }
+    /* Pill BAIK: absolute di atas, tetap di kanan */
+    .pill-baik {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        font-size: 12px;
+        padding: 6px 12px;
+    }
     .trend-grid { grid-template-columns: 1fr; }
     .trend-head { flex-direction: column; gap: 14px; }
 }
@@ -514,6 +603,75 @@ h1, h2, h3, p { margin: 0; }
 
 @media (min-width: 769px) {
     .sensor-cards-container { display: none; }
+}
+
+/* === Layar Sangat Kecil: Mobile S (≤ 380px, misal 320px DevTools) === */
+@media (max-width: 380px) {
+    .content {
+        padding: 16px 10px 140px !important;
+    }
+    .page-head h1 { font-size: 19px; }
+    .page-head p { font-size: 11.5px; }
+    .card-status {
+        padding: 16px 12px 18px;
+        border-radius: 18px;
+        gap: 10px 8px;
+    }
+    .pill-baik {
+        top: 12px;
+        right: 12px;
+        font-size: 11px;
+        padding: 4px 10px;
+    }
+    .status-top h2 { font-size: 16px; }
+    .status-top p { font-size: 11.5px; }
+    .status-index strong { font-size: 30px; }
+    .status-index .lbl { font-size: 11px; }
+    .gauge {
+        width: 100px;
+        height: 100px;
+    }
+    .gauge-text strong { font-size: 19px; }
+    .gauge-text span { font-size: 8.5px; }
+
+    /* Riwayat filters wrap rapi di Mobile S */
+    .riwayat-filters {
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+    }
+    .date-box {
+        flex: 1 1 calc(50% - 4px) !important;
+        padding: 6px 6px !important;
+    }
+    .date-box input[type="date"] {
+        font-size: 9.5px !important;
+    }
+    .btn-unduh-csv {
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        justify-content: center !important;
+        height: 34px !important;
+    }
+    .btn-unduh-csv .btn-text-full {
+        display: inline !important;
+    }
+    .btn-unduh-csv .btn-text-short {
+        display: none !important;
+    }
+
+    /* Mobile Nav bottom item */
+    .mobile-nav {
+        height: 60px;
+        padding: 0 4px;
+    }
+    .mobile-nav-item {
+        font-size: 9px;
+        gap: 2px;
+        letter-spacing: -0.2px;
+    }
+    .mobile-nav-item i {
+        font-size: 17px;
+    }
 }
 
 /* ================= MOBILE BOTTOM NAVIGATION (PWA) ================= */
