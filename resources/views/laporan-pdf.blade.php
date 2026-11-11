@@ -433,36 +433,7 @@
             </div>
         </section>
 
-        {{-- 4. RINGKASAN RATA-RATA PARAMETER AIR --}}
-        <h2 class="section-heading">Ringkasan Statistik Parameter Periode Ini</h2>
-        <section class="stats-grid">
-            <div class="stat-box">
-                <span class="sb-lbl">Rata-rata Skor</span>
-                <span class="sb-val" style="color:#16a34a;">{{ $stats['avg_skor'] }}</span>
-            </div>
-            <div class="stat-box">
-                <span class="sb-lbl">Rata-rata pH</span>
-                <span class="sb-val">{{ $stats['avg_ph'] }}</span>
-            </div>
-            <div class="stat-box">
-                <span class="sb-lbl">Rata-rata DO</span>
-                <span class="sb-val">{{ $stats['avg_do'] }}</span>
-            </div>
-            <div class="stat-box">
-                <span class="sb-lbl">Salinitas</span>
-                <span class="sb-val">{{ $stats['avg_sal'] }}</span>
-            </div>
-            <div class="stat-box">
-                <span class="sb-lbl">Suhu Air</span>
-                <span class="sb-val">{{ $stats['avg_suhu'] }}</span>
-            </div>
-            <div class="stat-box">
-                <span class="sb-lbl">Kekeruhan</span>
-                <span class="sb-val">{{ $stats['avg_ntu'] }}</span>
-            </div>
-        </section>
-
-        {{-- 5. TABEL RINCIAN PENGUKURAN TELEMETRI --}}
+        {{-- 4. TABEL RINCIAN PENGUKURAN TELEMETRI --}}
         <h2 class="section-heading">Log Pengukuran Telemetri Sensor</h2>
         <table class="report-table">
             <thead>
@@ -503,7 +474,7 @@
             </tbody>
         </table>
 
-        {{-- 6. LEMBAR VALIDASI & TANDA TANGAN RESMI --}}
+        {{-- 5. LEMBAR VALIDASI & TANDA TANGAN RESMI --}}
         <footer class="signature-area">
             <div class="sig-box">
                 <p>Mengetahui / Pelaksana Budidaya,<br><strong>Petambak Binaan</strong></p>
@@ -521,3 +492,4 @@
 
 </body>
 </html>
+

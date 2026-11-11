@@ -253,22 +253,9 @@
     });
 
     // =========================================================================
-    // 3. SINKRONISASI TANGGAL: RELOAD TABEL SAAT USER MEMILIH TANGGAL
+    // 3. TANGGAL: Tidak ada reload otomatis — tanggal dibaca saat tombol unduh diklik
     // =========================================================================
-    function applyDateFilter() {
-        if (!startInput || !endInput) return;
-        const start = startInput.value;
-        const end   = endInput.value;
-        if (start && end) {
-            const url = new URL(window.location.href);
-            url.searchParams.set('start_date', start);
-            url.searchParams.set('end_date', end);
-            window.location.href = url.toString();
-        }
-    }
-
-    if (startInput) startInput.addEventListener('change', applyDateFilter);
-    if (endInput)   endInput.addEventListener('change', applyDateFilter);
+    // (auto-reload dihapus; getFilterParams() membaca nilai terbaru saat unduh)
 
     // =========================================================================
     // 4. UNDUH LAPORAN PDF RESMI SESUAI RENTANG TANGGAL USER
