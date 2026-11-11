@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RiwayatSensorController;
 use App\Http\Controllers\KontrolAktuatorController;
+use App\Http\Controllers\NotifikasiController;
 use Illuminate\Support\Facades\Route;
 
 // ===== Auth (tampilan saja) =====
@@ -25,6 +26,9 @@ Route::get('/riwayat-sensor/export-csv', [RiwayatSensorController::class, 'expor
 
 // ===== Kontrol Aktuator =====
 Route::get('/kontrol-aktuator', [KontrolAktuatorController::class, 'index'])->name('kontrol-aktuator');
+
+// ===== Pusat Notifikasi & Peringatan Wadah =====
+Route::get('/notifikasi-wadah', [NotifikasiController::class, 'index'])->name('notifikasi-wadah');
 
 // Menu lain masih placeholder (hanya tampilan). Arahkan ke dashboard dulu.
 foreach (['inferensi-fuzzy', 'notifikasi-alarm', 'kalibrasi-sensor', 'pengaturan'] as $slug) {

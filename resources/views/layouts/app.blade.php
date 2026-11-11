@@ -79,19 +79,19 @@
                 <div class="sidebar-nav-group">
                     <span class="sidebar-nav-heading">MONITORING WADAH</span>
                     <nav class="menu">
-                        <a href="{{ route('dashboard', ['device' => $selectedDevice['id']]) }}" class="menu-item active">
+                        <a href="{{ route('dashboard', ['device' => $selectedDevice['id']]) }}" class="menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                             <i class="bi bi-grid-fill"></i>
                             <span>Dashboard Wadah</span>
                         </a>
-                        <a href="{{ route('inferensi-fuzzy') }}" class="menu-item">
+                        <a href="{{ route('inferensi-fuzzy') }}" class="menu-item {{ request()->routeIs('inferensi-fuzzy') ? 'active' : '' }}">
                             <i class="bi bi-water"></i>
                             <span>Analisis Kualitas Air</span>
                         </a>
-                        <a href="{{ route('riwayat-sensor') }}" class="menu-item">
+                        <a href="{{ route('riwayat-sensor') }}" class="menu-item {{ request()->routeIs('riwayat-sensor') ? 'active' : '' }}">
                             <i class="bi bi-file-earmark-text"></i>
                             <span>Riwayat & Laporan</span>
                         </a>
-                        <a href="#" class="menu-item menu-item-badge">
+                        <a href="{{ route('notifikasi-wadah') }}" class="menu-item menu-item-badge {{ request()->routeIs('notifikasi-wadah') ? 'active' : '' }}">
                             <i class="bi bi-bell"></i>
                             <span>Notifikasi Wadah</span>
                             <span class="menu-badge-red">2</span>
@@ -258,11 +258,129 @@
             </a>
         @endforeach
     </nav>
-</div>
+
+    {{-- ========== NOTIFICATION DRAWER (Panel Kanan, Semua Alat) ========== --}}
+    <div class="notif-drawer-overlay" id="notifDrawerOverlay"></div>
+    <aside class="notif-drawer" id="notifDrawer" role="dialog" aria-label="Notifikasi & Peringatan">
+
+        {{-- Header Drawer --}}
+        <div class="nd-header">
+            <div class="nd-header-left">
+                <i class="bi bi-bell nd-bell-icon"></i>
+                <div>
+                    <h3 class="nd-title">Notifikasi &amp; Peringatan</h3>
+                    <p class="nd-subtitle" id="ndSubtitle">2 belum dikonfirmasi</p>
+                </div>
+            </div>
+            <button class="nd-close-btn" id="notifDrawerClose" title="Tutup">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        {{-- Tab Filter --}}
+        <div class="nd-tabs">
+            <button class="nd-tab active" data-filter="all">Semua</button>
+            <button class="nd-tab" data-filter="critical">Critical</button>
+            <button class="nd-tab" data-filter="high">High</button>
+            <button class="nd-tab" data-filter="medium">Medium</button>
+            <div class="nd-tab-spacer"></div>
+            <button class="nd-mark-all" id="ndMarkAll" title="Tandai semua selesai">
+                <i class="bi bi-check2-all"></i> Tandai Selesai
+            </button>
+        </div>
+
+        {{-- Daftar Notifikasi --}}
+        <div class="nd-list" id="ndList">
+
+            {{-- Item: Kritis --}}
+            <article class="nd-item nd-item-high" data-filter="high" data-status="pending">
+                <div class="nd-item-left">
+                    <i class="bi bi-exclamation-triangle-fill nd-icon-high"></i>
+                </div>
+                <div class="nd-item-body">
+                    <div class="nd-item-top">
+                        <strong class="nd-item-title">Suhu Permukaan Air Tambak Tinggi</strong>
+                        <span class="nd-item-time">10 menit lalu</span>
+                    </div>
+                    <p class="nd-item-desc">Suhu air mencapai 32,4°C. Mist Cooler telah dipicu otomatis oleh sistem inferensi fuzzy untuk mencegah stres termal pada kepiting.</p>
+                    <div class="nd-item-footer">
+                        <span class="nd-item-device">Unit 01 — Apartemen Kepiting Soka A1</span>
+                        <button class="nd-btn-confirm" data-nd-confirm>Konfirmasi</button>
+                    </div>
+                </div>
+            </article>
+
+            {{-- Item: Tinggi --}}
+            <article class="nd-item nd-item-high" data-filter="high" data-status="pending">
+                <div class="nd-item-left">
+                    <i class="bi bi-exclamation-triangle-fill nd-icon-high"></i>
+                </div>
+                <div class="nd-item-body">
+                    <div class="nd-item-top">
+                        <strong class="nd-item-title">Koneksi Perangkat Node Terputus</strong>
+                        <span class="nd-item-time">3 jam lalu</span>
+                    </div>
+                    <p class="nd-item-desc">Perangkat kehilangan sinyal telemetri selama lebih dari 180 menit. Tegangan baterai terakhir tercatat rendah (11.2V).</p>
+                    <div class="nd-item-footer">
+                        <span class="nd-item-device">Unit 04 — Apartemen Box Cadangan D4</span>
+                        <button class="nd-btn-confirm" data-nd-confirm>Konfirmasi</button>
+                    </div>
+                </div>
+            </article>
+
+            {{-- Item: Sedang —sudah selesai --}}
+            <article class="nd-item nd-item-medium" data-filter="medium" data-status="done">
+                <div class="nd-item-left">
+                    <i class="bi bi-info-circle-fill nd-icon-medium"></i>
+                </div>
+                <div class="nd-item-body">
+                    <div class="nd-item-top">
+                        <strong class="nd-item-title">Oksigen Terlarut Mendekati Batas Kritis</strong>
+                        <span class="nd-item-time">1 jam lalu</span>
+                    </div>
+                    <p class="nd-item-desc">Kadar DO berada pada 5,40 mg/L (cukup). Aerator Venturi dipertahankan aktif 85% duty cycle.</p>
+                    <div class="nd-item-footer">
+                        <span class="nd-item-device">Unit 01 — Apartemen Kepiting Soka A1</span>
+                        <span class="nd-btn-done"><i class="bi bi-check-circle-fill"></i> Selesai</span>
+                    </div>
+                </div>
+            </article>
+
+            {{-- Item: Info —sudah selesai --}}
+            <article class="nd-item nd-item-medium" data-filter="medium" data-status="done">
+                <div class="nd-item-left">
+                    <i class="bi bi-info-circle-fill nd-icon-medium"></i>
+                </div>
+                <div class="nd-item-body">
+                    <div class="nd-item-top">
+                        <strong class="nd-item-title">Pemberian Pakan Terjadwal Selesai</strong>
+                        <span class="nd-item-time">5 jam lalu</span>
+                    </div>
+                    <p class="nd-item-desc">Dispenser pakan menyebarkan 250 gram pelet nutrisi kepiting soka sesuai jadwal pagi pukul 06:00 WIB.</p>
+                    <div class="nd-item-footer">
+                        <span class="nd-item-device">Unit 02 — Kolam Pembesaran B2</span>
+                        <span class="nd-btn-done"><i class="bi bi-check-circle-fill"></i> Selesai</span>
+                    </div>
+                </div>
+            </article>
+
+        </div>
+
+        {{-- Footer Drawer --}}
+        <div class="nd-footer">
+            <i class="bi bi-cpu nd-footer-icon"></i>
+            <span>Notifikasi otomatis dihasilkan oleh rule engine AquaCrab IoT</span>
+        </div>
+
+    </aside>
+
+</div>{{-- /.app --}}
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+
+    // ───── Sidebar Device Dropdown (existing) ─────
     const trigger = document.getElementById('sidebarDeviceTrigger');
     const dropdown = document.getElementById('sidebarDeviceDropdown');
     if (trigger && dropdown) {
@@ -285,6 +403,110 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+    // ───── Notification Drawer ─────
+    const drawer  = document.getElementById('notifDrawer');
+    const overlay = document.getElementById('notifDrawerOverlay');
+    const closeBtn = document.getElementById('notifDrawerClose');
+    const ndList  = document.getElementById('ndList');
+    const ndSubtitle = document.getElementById('ndSubtitle');
+
+    function openDrawer() {
+        drawer.classList.add('open');
+        overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+        drawer.classList.remove('open');
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    // Semua tombol lonceng di halaman (class btn-notif-bell) membuka drawer
+    document.querySelectorAll('.btn-notif-bell').forEach(function(bell) {
+        bell.addEventListener('click', function(e) {
+            e.preventDefault();
+            openDrawer();
+        });
+    });
+
+    if (closeBtn)  closeBtn.addEventListener('click', closeDrawer);
+    if (overlay)   overlay.addEventListener('click', closeDrawer);
+
+    // ESC menutup drawer
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeDrawer();
+    });
+
+    // ───── Tab Filter Drawer ─────
+    document.querySelectorAll('.nd-tab').forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.nd-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+
+            const filter = this.dataset.filter;
+            document.querySelectorAll('#ndList .nd-item').forEach(function(item) {
+                item.style.display = (filter === 'all' || item.dataset.filter === filter) ? '' : 'none';
+            });
+        });
+    });
+
+    // ───── Konfirmasi per Item ─────
+    function countPending() {
+        return document.querySelectorAll('#ndList .nd-item[data-status="pending"]').length;
+    }
+
+    function updateSubtitle() {
+        const n = countPending();
+        if (ndSubtitle) ndSubtitle.textContent = n > 0 ? n + ' belum dikonfirmasi' : 'Semua sudah dikonfirmasi';
+
+        // Perbarui badge lonceng di semua header
+        document.querySelectorAll('.notif-badge-dot').forEach(function(badge) {
+            badge.textContent = n;
+            badge.style.display = n === 0 ? 'none' : '';
+        });
+    }
+
+    function confirmItem(item) {
+        if (!item || item.dataset.status === 'done') return;
+        item.dataset.status = 'done';
+
+        const footer = item.querySelector('.nd-item-footer');
+        if (footer) {
+            const btn = footer.querySelector('[data-nd-confirm]');
+            if (btn) {
+                btn.outerHTML = '<span class="nd-btn-done"><i class="bi bi-check-circle-fill"></i> Selesai</span>';
+            }
+        }
+
+        // Tambah class visual selesai
+        item.classList.add('nd-item-done');
+        updateSubtitle();
+    }
+
+    // Event delegation untuk tombol Konfirmasi
+    if (ndList) {
+        ndList.addEventListener('click', function(e) {
+            const btn = e.target.closest('[data-nd-confirm]');
+            if (btn) {
+                confirmItem(btn.closest('.nd-item'));
+            }
+        });
+    }
+
+    // Tandai Semua Selesai
+    const ndMarkAll = document.getElementById('ndMarkAll');
+    if (ndMarkAll) {
+        ndMarkAll.addEventListener('click', function() {
+            document.querySelectorAll('#ndList .nd-item[data-status="pending"]').forEach(function(item) {
+                confirmItem(item);
+            });
+        });
+    }
+
+    // Inisialisasi subtitle
+    updateSubtitle();
 });
 </script>
 @stack('scripts')
