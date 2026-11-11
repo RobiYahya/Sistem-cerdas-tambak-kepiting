@@ -86,69 +86,136 @@ class DashboardController extends Controller
             $menus[] = ['label' => 'Logout', 'icon' => 'bi-box-arrow-right', 'url' => route('logout'), 'active' => false];
         }
 
-        // Data monitoring spesifik (untuk tampilan detail perangkat)
+        // Data monitoring spesifik (untuk tampilan detail perangkat sesuai mockup)
         $kualitas = [
             'status' => $selectedDevice['kualitas'] ?? 'BAIK',
-            'indeks' => $selectedDevice['indeks'] ?? 75.3,
+            'indeks' => $selectedDevice['indeks'] ?? 75.5,
             'sub'    => [
-                ['label' => 'Indeks Kimiawi', 'nilai' => 72],
-                ['label' => 'Indeks Osmotik', 'nilai' => 78],
-                ['label' => 'Indeks Fisik',   'nilai' => 76],
+                ['label' => 'Indeks Kimiawi', 'nilai' => 84],
+                ['label' => 'Indeks Osmotik', 'nilai' => 54],
+                ['label' => 'Indeks Fisik',   'nilai' => 92],
             ],
         ];
 
-        $parameters = [
-            ['nama' => 'Derajat Keasaman', 'nilai' => $selectedDevice['ph'] ?? '8,48',      'satuan' => 'pH',   'status' => 'normal',  'persen' => 70],
-            ['nama' => 'Oksigen Terlarut', 'nilai' => $selectedDevice['do'] ?? '5,40',      'satuan' => 'mg/L', 'status' => 'cukup',   'persen' => 50],
-            ['nama' => 'Suhu Air',         'nilai' => $selectedDevice['suhu_raw'] ?? '32,4', 'satuan' => '°C',  'status' => 'waspada', 'persen' => 82],
-            ['nama' => 'Level Air',        'nilai' => '78',                                  'satuan' => '%',   'status' => 'normal',  'persen' => 78],
-            ['nama' => 'Salinitas',        'nilai' => $selectedDevice['sal_raw'] ?? '30,2',  'satuan' => 'ppt', 'status' => 'normal',  'persen' => 64],
-            ['nama' => 'Kekeruhan',        'nilai' => '12,5',                                'satuan' => 'NTU', 'status' => 'cukup',   'persen' => 45],
+        // 6 Parameter probe sensor dengan nilai & fuzzifikasi
+        $sixParameters = [
+            [
+                'id'     => 'ph',
+                'label'  => 'pH',
+                'nilai'  => '8,51',
+                'satuan' => '',
+                'fuzzy'  => 'Normal 0,633 • Basa 0,367',
+                'status' => 'normal',
+            ],
+            [
+                'id'     => 'do',
+                'label'  => 'DO',
+                'nilai'  => '5,71',
+                'satuan' => 'mg/L',
+                'fuzzy'  => 'Cukup 1,000',
+                'status' => 'cukup',
+            ],
+            [
+                'id'     => 'salinitas',
+                'label'  => 'Salinitas',
+                'nilai'  => '26,4',
+                'satuan' => 'ppt',
+                'fuzzy'  => 'Optimal 1,000',
+                'status' => 'normal',
+            ],
+            [
+                'id'     => 'suhu',
+                'label'  => 'Suhu',
+                'nilai'  => '32,4',
+                'satuan' => '°C',
+                'fuzzy'  => 'Optimal 0,067 • Panas 0,...',
+                'status' => 'waspada',
+            ],
+            [
+                'id'     => 'kekeruhan',
+                'label'  => 'Kekeruhan',
+                'nilai'  => '34',
+                'satuan' => 'NTU',
+                'fuzzy'  => 'Jernih 0,733',
+                'status' => 'cukup',
+            ],
+            [
+                'id'     => 'level',
+                'label'  => 'Level Air',
+                'nilai'  => '78',
+                'satuan' => '%',
+                'fuzzy'  => 'Normal 1,000',
+                'status' => 'normal',
+            ],
         ];
 
-        $trends = [
+        // 4 Status aktuator wadah: Solenoid Valve, Aerator, Dosing Pump, dan Pompa Sirkulasi
+        $aktuators = [
             [
-                'id' => 'ph', 'nama' => 'Derajat Keasaman', 'nilai' => ($selectedDevice['ph'] ?? '8,48') . ' pH', 'status' => 'normal',
-                'min' => 7, 'max' => 9, 'step' => 1,
-                'data' => [7.0,7.4,7.9,8.3,8.5,8.6,8.6,8.3,8.1,8.1,8.0,7.9,8.1,8.3,8.4,8.5,8.6,8.7,8.8,8.6,8.4,8.2,8.1,8.0,8.0],
+                'id'    => 'solenoid-valve',
+                'nama'  => 'Solenoid Valve',
+                'sub'   => 'Regulasi Salinitas Air (Standby)',
+                'state' => 'OFF',
             ],
             [
-                'id' => 'do', 'nama' => 'Oksigen Terlarut', 'nilai' => ($selectedDevice['do'] ?? '5,40') . ' mg/L', 'status' => 'cukup',
-                'min' => 4, 'max' => 8, 'step' => 2,
-                'data' => [5.2,5.5,5.8,6.0,6.1,6.1,6.0,6.0,6.0,6.1,6.3,6.6,7.2,6.7,6.6,6.5,6.3,6.0,5.7,5.4,5.0,4.7,4.4,4.2,4.0],
+                'id'    => 'aerator',
+                'nama'  => 'Aerator',
+                'sub'   => 'Sirkulasi Oksigen Terlarut (Aktif)',
+                'state' => 'ON',
             ],
             [
-                'id' => 'suhu', 'nama' => 'Suhu Air', 'nilai' => ($selectedDevice['suhu'] ?? '32,4 °C'), 'status' => 'waspada',
-                'min' => 25, 'max' => 35, 'step' => 5,
-                'data' => [29.5,29,28.3,27.4,26.5,26,25.7,25.5,25.5,25.4,25.7,26.5,27.6,29.3,30.8,32,33,33.2,33.3,33.3,33,32.8,32.2,31.4,31.5],
+                'id'    => 'dosing-pump',
+                'nama'  => 'Dosing Pump',
+                'sub'   => 'Injeksi Buffer pH Air (Standby)',
+                'state' => 'OFF',
             ],
             [
-                'id' => 'level', 'nama' => 'Level Air', 'nilai' => '78%', 'status' => 'normal',
-                'min' => 50, 'max' => 100, 'step' => 25,
-                'data' => [52,60,70,82,90,94,95,93,76,70,72,78,85,90,92,91,86,78,70,66,64,62,68,74,72],
-            ],
-            [
-                'id' => 'salinitas', 'nama' => 'Salinitas', 'nilai' => ($selectedDevice['salinitas'] ?? '30,2 ppt'), 'status' => 'normal',
-                'min' => 25, 'max' => 35, 'step' => 5,
-                'data' => [29,29.4,29.8,30,30.3,30.6,30.8,30.5,30.2,30,29.8,29.9,30.1,30.4,30.7,31,30.8,30.5,30.3,30.1,30,30.2,30.3,30.2,30.2],
-            ],
-            [
-                'id' => 'turbid', 'nama' => 'Kekeruhan', 'nilai' => '12,5 NTU', 'status' => 'cukup',
-                'min' => 0, 'max' => 20, 'step' => 10,
-                'data' => [8,8.5,9,10,11,12,13,14,15,14,13,12.5,12,11,10.5,11,12,13,14,13.5,13,12.8,12.6,12.5,12.5],
+                'id'    => 'pompa-sirkulasi',
+                'nama'  => 'Pompa Sirkulasi',
+                'sub'   => 'Sirkulasi & Filtrasi Air (Aktif)',
+                'state' => 'ON',
             ],
         ];
 
-        $alerts = array_fill(0, 3, [
-            'tipe'   => 'ALERT KRITIS',
-            'lokasi' => $selectedDevice['nama'] ?? 'Tambak A',
-            'pesan'  => 'ALERT System: pH ' . ($selectedDevice['nama'] ?? 'Tambak A') . ' mencapai 8.9 (Kritis).',
-        ]);
+        // Data multi-parameter telemetri 24 jam (7 titik waktu: 00:00, 04:00, 08:00, 12:00, 16:00, 20:00, Sekarang)
+        $telemetriTrend = [
+            'labels'   => ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', 'Sekarang'],
+            'datasets' => [
+                [
+                    'id'          => 'ph',
+                    'label'       => 'pH (8,48)',
+                    'data'        => [6.2, 6.4, 6.4, 6.5, 6.6, 6.1, 6.3],
+                    'borderColor' => '#10b981',
+                    'color'       => '#10b981',
+                ],
+                [
+                    'id'          => 'do',
+                    'label'       => 'DO (5,40 mg/L)',
+                    'data'        => [6.9, 7.3, 7.5, 7.4, 7.3, 7.6, 7.7],
+                    'borderColor' => '#0284c7',
+                    'color'       => '#0284c7',
+                ],
+                [
+                    'id'          => 'salinitas',
+                    'label'       => 'Salinitas (26,4 ppt)',
+                    'data'        => [7.5, 7.4, 7.3, 7.2, 7.1, 7.3, 7.6],
+                    'borderColor' => '#8b5cf6',
+                    'color'       => '#8b5cf6',
+                ],
+                [
+                    'id'          => 'suhu',
+                    'label'       => 'Suhu (32,4 °C)',
+                    'data'        => [7.7, 7.8, 7.7, 7.5, 8.4, 7.2, 8.2],
+                    'borderColor' => '#f97316',
+                    'color'       => '#f97316',
+                ],
+            ],
+        ];
 
         return view('dashboard', compact(
             'userRole', 'menus', 'devices', 'totalDevices', 'onlineCount', 'offlineCount',
             'optimalCount', 'warningCount', 'avgQuality',
-            'selectedDevice', 'kualitas', 'parameters', 'trends', 'alerts'
+            'selectedDevice', 'kualitas', 'sixParameters', 'aktuators', 'telemetriTrend'
         ));
     }
 
@@ -255,23 +322,33 @@ class DashboardController extends Controller
                     'id'        => 'AQ-BOX-A1',
                     'token'     => 'CRAB-TOKEN-8F2A',
                     'nama'      => 'Unit 01 — Apartemen Kepiting Soka A1',
+                    'tipe'      => 'Apartemen Box Vertikal',
                     'lokasi'    => 'Sektor Utara Tambak A1',
+                    'petambak'  => 'Pak Robi (Petambak Binaan)',
+                    'populasi'  => '850 ekor',
+                    'rssi'      => '-68 dBm',
+                    'baterai'   => '94%',
                     'status'    => 'online',
                     'last_seen' => '10 detik lalu',
                     'kualitas'  => 'BAIK',
-                    'indeks'    => 75.3,
-                    'ph'        => '8,18',
-                    'suhu'      => '29,5 °C',
-                    'suhu_raw'  => '29,5',
-                    'do'        => '5,76',
-                    'salinitas' => '25,1 ppt',
-                    'sal_raw'   => '25,1',
+                    'indeks'    => 75.5,
+                    'ph'        => '8,51',
+                    'suhu'      => '32,4 °C',
+                    'suhu_raw'  => '32,4',
+                    'do'        => '5,71',
+                    'salinitas' => '26,4 ppt',
+                    'sal_raw'   => '26,4',
                 ],
                 [
                     'id'        => 'AQ-BOX-B2',
                     'token'     => 'CRAB-TOKEN-3C9D',
                     'nama'      => 'Unit 02 — Kolam Pembesaran B2',
+                    'tipe'      => 'Apartemen Box Vertikal',
                     'lokasi'    => 'Sektor Barat Tambak B',
+                    'petambak'  => 'Pak Robi (Petambak Binaan)',
+                    'populasi'  => '620 ekor',
+                    'rssi'      => '-72 dBm',
+                    'baterai'   => '88%',
                     'status'    => 'online',
                     'last_seen' => '30 detik lalu',
                     'kualitas'  => 'SANGAT BAIK',
@@ -287,7 +364,12 @@ class DashboardController extends Controller
                     'id'        => 'AQ-BOX-C1',
                     'token'     => 'CRAB-TOKEN-7E1B',
                     'nama'      => 'Unit 03 — Kolam Karantina & Aklimatisasi C1',
+                    'tipe'      => 'Apartemen Box Vertikal',
                     'lokasi'    => 'Bangsal Riset & Karantina',
+                    'petambak'  => 'Pak Budi Hartono',
+                    'populasi'  => '120 ekor',
+                    'rssi'      => '-79 dBm',
+                    'baterai'   => '76%',
                     'status'    => 'online',
                     'last_seen' => '1 menit lalu',
                     'kualitas'  => 'CUKUP',
@@ -303,7 +385,12 @@ class DashboardController extends Controller
                     'id'        => 'AQ-BOX-D4',
                     'token'     => 'CRAB-TOKEN-5A8F',
                     'nama'      => 'Unit 04 — Wadah Jerigen Adaptasi D4',
+                    'tipe'      => 'Wadah Jerigen 20L',
                     'lokasi'    => 'Sektor Selatan Tambak D',
+                    'petambak'  => 'Kelompok Tambak Sido Makmur',
+                    'populasi'  => '45 ekor',
+                    'rssi'      => '-82 dBm',
+                    'baterai'   => '65%',
                     'status'    => 'online',
                     'last_seen' => '3 menit lalu',
                     'kualitas'  => 'WASPADA',

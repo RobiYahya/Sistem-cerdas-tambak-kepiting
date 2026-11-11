@@ -15,10 +15,44 @@
      ========================================================================= --}}
 <header class="page-head">
     @if ($selectedDevice)
-        <div class="page-head-bar">
-            <div>
-                <h1>Monitoring Kualitas Air Laut</h1>
-                <p>Pantau parameter air secara real-time untuk <strong>{{ $selectedDevice['nama'] }}</strong>.</p>
+        <div class="wadah-detail-breadcrumb">
+            <a href="{{ route('dashboard') }}" class="wdb-link">Perangkat Saya</a>
+            <i class="bi bi-chevron-right wdb-sep"></i>
+            <span class="wdb-device">{{ Str::limit($selectedDevice['nama'], 26) }}</span>
+            <i class="bi bi-chevron-right wdb-sep"></i>
+            <span class="wdb-current">Dashboard Wadah</span>
+        </div>
+        <div class="page-head-bar wadah-head-bar">
+            <div class="header-wadah-title-wrap">
+                <h1 class="wadah-title-detail">
+                    Dashboard Wadah &mdash; {{ $selectedDevice['nama'] }}
+                    <span class="badge-role-pill">{{ ($userRole ?? session('user_role', 'teknisi')) === 'teknisi' ? 'TEKNISI' : 'NELAYAN' }}</span>
+                    <span class="combined-telemetry-pill">
+                        <span class="ctp-item"><i class="bi bi-wifi"></i> {{ $selectedDevice['rssi'] ?? '-68 dBm' }}</span>
+                        <span class="ctp-sep">&bull;</span>
+                        <span class="ctp-item"><i class="bi bi-battery-charging"></i> {{ $selectedDevice['baterai'] ?? '94%' }}</span>
+                    </span>
+                </h1>
+                <p class="wadah-subtitle-detail">Pemantauan telemetri real-time 6 parameter dan status kesehatan kepiting pada {{ $selectedDevice['nama'] }}.</p>
+            </div>
+            <div class="wadah-head-actions">
+                <button type="button" class="btn-notif-bell" title="Notifikasi Wadah (2 Baru)">
+                    <i class="bi bi-bell"></i>
+                    <span class="notif-badge-dot">2</span>
+                </button>
+                <div class="header-device-selector-pill">
+                    <i class="bi bi-stack hdsp-icon"></i>
+                    <span class="hdsp-name">{{ $selectedDevice['nama'] }}</span>
+                    <span class="hdsp-badge">BAIK</span>
+                    <i class="bi bi-chevron-down hdsp-chevron"></i>
+                    <select class="hdsp-select" onchange="window.location.href='{{ route('dashboard') }}?device=' + this.value" title="Ganti Wadah">
+                        @foreach ($devices as $dev)
+                            <option value="{{ $dev['id'] }}" {{ $dev['id'] === $selectedDevice['id'] ? 'selected' : '' }}>
+                                {{ $dev['nama'] }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
         </div>
     @else
@@ -60,185 +94,197 @@
      2. JIKA SEDANG MEMBUKA DETAIL MONITORING SATU PERANGKAT (?device=...)
      ========================================================================= --}}
 @if ($selectedDevice)
-    {{-- Topbar Navigasi Detail Perangkat --}}
-    <div class="device-detail-topbar">
-        <div class="ddt-left">
-            <a href="{{ route('dashboard') }}" class="device-back-btn" title="Kembali ke Perangkat Saya">
-                <i class="bi bi-arrow-left"></i> <span>Semua Perangkat</span>
+    {{-- A. Sub-Header Kartu Wadah --}}
+    <section class="device-subcard-header">
+        <div class="dsh-left">
+            <a href="{{ route('dashboard') }}" class="btn-circle-back" title="Kembali ke Daftar Perangkat">
+                <i class="bi bi-arrow-left"></i>
             </a>
-
-            {{-- Dropdown Pengganti Perangkat Langsung --}}
-            <div class="device-picker-dropdown">
-                <label for="devicePickerSelect"><i class="bi bi-grid-fill"></i> Kolam:</label>
-                <select id="devicePickerSelect" class="device-picker-select" onchange="window.location.href='{{ route('dashboard') }}?device=' + this.value">
-                    @foreach ($devices as $dev)
-                        <option value="{{ $dev['id'] }}" {{ $dev['id'] === $selectedDevice['id'] ? 'selected' : '' }}>
-                            {{ $dev['nama'] }} ({{ $dev['status'] === 'online' ? '🟢 Online' : '⚪ Offline' }})
-                        </option>
-                    @endforeach
-                </select>
+            <div class="dsh-title-group">
+                <div class="dsh-top-meta">
+                    <span class="wadah-id-chip">{{ $selectedDevice['id'] }}</span>
+                    <span class="dsh-type-text">&bull; {{ $selectedDevice['tipe'] ?? 'Apartemen Box Vertikal' }}</span>
+                </div>
+                <h2 class="dsh-main-title">Dashboard {{ $selectedDevice['nama'] }}</h2>
+                <div class="dsh-meta-row">
+                    <span class="dsh-meta-item"><i class="bi bi-geo-alt"></i> {{ $selectedDevice['lokasi'] }}</span>
+                    <span class="dsh-meta-sep">&bull;</span>
+                    <span class="dsh-meta-item">Petambak: <strong>{{ $selectedDevice['petambak'] ?? 'Pak Robi (Petambak Binaan)' }}</strong></span>
+                    <span class="dsh-meta-sep">&bull;</span>
+                    <span class="dsh-meta-item">Populasi: <strong>{{ $selectedDevice['populasi'] ?? '850 ekor' }}</strong></span>
+                </div>
             </div>
         </div>
 
-        <div class="ddt-right">
-            <span class="{{ $selectedDevice['status'] === 'online' ? 'device-badge-online' : 'device-badge-offline' }}">
-                <i class="dot"></i> {{ strtoupper($selectedDevice['status']) }}
-            </span>
-            <span class="ddt-loc-text"><i class="bi bi-geo-alt-fill"></i> {{ $selectedDevice['lokasi'] }}</span>
+        <div class="dsh-right">
+            <div class="dsh-tabs">
+                <button type="button" class="dsh-tab active">Telemetri Real-Time</button>
+                <button type="button" class="dsh-tab btn-trigger-info-node"
+                        data-id="{{ $selectedDevice['id'] }}"
+                        data-nama="{{ $selectedDevice['nama'] }}"
+                        data-lokasi="{{ $selectedDevice['lokasi'] }}"
+                        data-token="{{ $selectedDevice['token'] }}"
+                        data-status="{{ $selectedDevice['status'] }}"
+                        data-last="{{ $selectedDevice['last_seen'] }}">
+                    Informasi Perangkat
+                </button>
+            </div>
+            <span class="wadah-status-pill online"><i class="dot"></i> ONLINE</span>
         </div>
-    </div>
+    </section>
 
-    {{-- Grid Monitoring Lengkap (Status, Parameter, Tren & Notifikasi) --}}
-    <div class="grid">
-        {{-- 1. Status Kualitas Air (Kompak & Anti-Terpotong dengan Desain Gauge Bersih) --}}
-        <section class="card-status">
-            <div class="cs-head">
-                <div>
-                    <h2>Status Kualitas Air</h2>
-                    <p>Monitoring untuk <strong>{{ $selectedDevice['nama'] }}</strong> ({{ $selectedDevice['id'] }}).</p>
-                </div>
-                @php
-                    $statusUpper = strtoupper($kualitas['status']);
-                    $pillClass = match($statusUpper) {
-                        'BAIK', 'OPTIMAL' => 'pill-baik',
-                        'CUKUP', 'NORMAL' => 'pill-cukup',
-                        'WASPADA'         => 'pill-waspada',
-                        'KRITIS'          => 'pill-kritis',
-                        default           => 'pill-baik',
-                    };
-                @endphp
-                <span class="pill-status {{ strtolower($kualitas['status']) }} {{ $pillClass }}">
-                    <i class="dot"></i>{{ $kualitas['status'] }}
-                </span>
+    {{-- B. Banner Peringatan Kritis Suhu --}}
+    <section class="alert-banner-amber">
+        <div class="aba-left">
+            <div class="aba-icon"><i class="bi bi-shield-exclamation"></i></div>
+            <div class="aba-content">
+                <strong>Peringatan Suhu Permukaan {{ $selectedDevice['nama'] }}: 32,4°C</strong>
+                <p>Suhu melewati ambang batas optimal (31,0°C). Mist Cooler dipicu otomatis oleh sistem inferensi fuzzy.</p>
+            </div>
+        </div>
+        <button type="button" class="aba-btn">Lihat Peringatan</button>
+    </section>
+
+    {{-- C. Status Kualitas Air (Green Hero Card Sesuai Mockup) --}}
+    <section class="card-status-forest">
+        <div class="csf-head">
+            <div>
+                <h2>Status Kualitas Air</h2>
+                <p>Indeks kualitas air berdasarkan data terbaru.</p>
+            </div>
+            <span class="csf-badge-white"><i class="dot"></i> BAIK</span>
+        </div>
+
+        <div class="csf-center">
+            <div class="csf-left-val">
+                <span class="csf-val-lbl">Nilai indeks</span>
+                <strong class="csf-val-big">{{ number_format($kualitas['indeks'], 1, ',', '.') }}</strong>
             </div>
 
-            <div class="cs-body">
-                <div class="cs-index-wrap">
-                    <span class="lbl">Nilai Indeks</span>
-                    <strong class="cs-index-val">{{ number_format($kualitas['indeks'], 1, ',', '.') }}</strong>
-                </div>
-
-                <div class="gauge">
-                    <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="60" cy="60" r="48" fill="none"
-                            stroke="rgba(255,255,255,0.15)" stroke-width="14"/>
-                        <circle cx="60" cy="60" r="48" fill="none"
-                            stroke="#d9fb5c" stroke-width="14" stroke-linecap="round"
-                            stroke-dasharray="{{ round(2*3.14159*48*$kualitas['indeks']/100, 2) }} {{ round(2*3.14159*48, 2) }}"
-                            transform="rotate(-90 60 60)"/>
-                    </svg>
-                    <div class="gauge-text">
-                        <strong>{{ number_format($kualitas['indeks'], 1, ',', '.') }}</strong>
-                        <span>Indeks Kualitas</span>
-                    </div>
+            <div class="csf-gauge">
+                <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="60" cy="60" r="48" fill="none"
+                        stroke="rgba(255,255,255,0.18)" stroke-width="12"/>
+                    <circle cx="60" cy="60" r="48" fill="none"
+                        stroke="#ccf832" stroke-width="12" stroke-linecap="round"
+                        stroke-dasharray="{{ round(2 * 3.14159 * 48 * $kualitas['indeks'] / 100, 2) }} {{ round(2 * 3.14159 * 48, 2) }}"
+                        transform="rotate(-90 60 60)"/>
+                </svg>
+                <div class="csf-gauge-text">
+                    <strong>{{ number_format($kualitas['indeks'], 1, ',', '.') }}</strong>
+                    <span>Indeks Kualitas</span>
                 </div>
             </div>
+        </div>
 
-            <div class="sub-index">
-                @foreach ($kualitas['sub'] as $s)
-                    <div class="sub-box">
-                        <span>{{ $s['label'] }}</span>
-                        <strong>{{ $s['nilai'] }}%</strong>
-                    </div>
-                @endforeach
-            </div>
-        </section>
-
-        {{-- 2. Parameter Air (Kartu Geser) --}}
-        <section class="param-panel">
-            <div class="panel-head">
-                <div>
-                    <h2>Parameter Air</h2>
-                    <p>6 kartu sensor dalam tampilan geser</p>
+        <div class="csf-subcards">
+            @foreach ($kualitas['sub'] as $sub)
+                <div class="csf-subcard">
+                    <span class="csfs-lbl">{{ $sub['label'] }}</span>
+                    <strong class="csfs-val">{{ $sub['nilai'] }}%</strong>
                 </div>
-                <div class="arrows">
-                    <button class="arrow" id="paramPrev" aria-label="Sebelumnya"><i class="bi bi-chevron-left"></i></button>
-                    <button class="arrow" id="paramNext" aria-label="Berikutnya"><i class="bi bi-chevron-right"></i></button>
-                </div>
-            </div>
-
-            @foreach ($parameters as $i => $p)
-                <article class="param-card" data-page="{{ intdiv($i, 2) }}">
-                    <div class="param-top">
-                        <h3>{{ $p['nama'] }}</h3>
-                        <span class="badge {{ $p['status'] }}"><i class="dot"></i>{{ $statusLabel[$p['status']] }}</span>
-                    </div>
-                    <div class="param-value">{{ $p['nilai'] }}<small>{{ $p['satuan'] }}</small></div>
-                    <div class="bar"><i class="{{ $p['status'] }}" style="width: {{ $p['persen'] }}%"></i></div>
-                </article>
             @endforeach
+        </div>
+    </section>
 
-            <div class="dots" id="paramDots">
-                @for ($d = 0; $d < ceil(count($parameters) / 2); $d++)
-                    <i class="{{ $d === 0 ? 'on' : '' }}"></i>
-                @endfor
+    {{-- D. Enam Parameter Kualitas Air Wadah --}}
+    <section class="card-six-parameters">
+        <div class="csp-head">
+            <div>
+                <h3>Enam Parameter Kualitas Air Wadah</h3>
+                <p>Nilai masukan dan hasil fuzzifikasi untuk probe sensor pada {{ $selectedDevice['nama'] }}.</p>
+            </div>
+            <a href="{{ route('inferensi-fuzzy') }}" class="csp-link-fuzzy">
+                <span>Telusuri Fuzzifikasi</span>
+                <i class="bi bi-arrow-up-right"></i>
+            </a>
+        </div>
+
+        <div class="csp-grid">
+            @foreach ($sixParameters as $param)
+                <div class="csp-item-card">
+                    <span class="csp-param-name">{{ $param['label'] }}</span>
+                    <div class="csp-param-val">
+                        <strong>{{ $param['nilai'] }}</strong>
+                        @if ($param['satuan'])
+                            <small>{{ $param['satuan'] }}</small>
+                        @endif
+                    </div>
+                    <span class="csp-param-fuzzy">{{ $param['fuzzy'] }}</span>
+                </div>
+            @endforeach
+        </div>
+    </section>
+
+    {{-- E. Split Grid: Grafik Tren Telemetri (Kiri) & Status Aktuator (Kanan) --}}
+    <div class="dashboard-split-row">
+        {{-- Kolom Kiri: Grafik Tren Telemetri Kualitas Air --}}
+        <section class="card-chart-telemetri">
+            <div class="cct-head">
+                <div>
+                    <h3>Grafik Tren Telemetri Kualitas Air</h3>
+                    <p>Fluktuasi 24 jam terakhir pada {{ $selectedDevice['nama'] }}</p>
+                </div>
+                <div class="cct-filter-tabs" id="chartFilterTabs">
+                    <button type="button" class="cct-filter-btn active" data-filter="all">Semua</button>
+                    <button type="button" class="cct-filter-btn" data-filter="ph">pH</button>
+                    <button type="button" class="cct-filter-btn" data-filter="do">DO</button>
+                    <button type="button" class="cct-filter-btn" data-filter="salinitas">Salinitas</button>
+                    <button type="button" class="cct-filter-btn" data-filter="suhu">Suhu</button>
+                </div>
+            </div>
+
+            <div class="cct-canvas-wrap">
+                <canvas id="chartTrenTelemetri" height="260"></canvas>
+            </div>
+
+            <div class="cct-legend-row">
+                <div class="cct-legend-item text-green">
+                    <span class="cct-legend-line" style="background: #10b981;"></span>
+                    <span>pH (8,48)</span>
+                </div>
+                <div class="cct-legend-item text-cyan">
+                    <span class="cct-legend-line" style="background: #0284c7;"></span>
+                    <span>DO (5,40 mg/L)</span>
+                </div>
+                <div class="cct-legend-item text-purple">
+                    <span class="cct-legend-line" style="background: #8b5cf6;"></span>
+                    <span>Salinitas (26,4 ppt)</span>
+                </div>
+                <div class="cct-legend-item text-orange">
+                    <span class="cct-legend-line" style="background: #f97316;"></span>
+                    <span>Suhu (32,4 &deg;C)</span>
+                </div>
             </div>
         </section>
 
-        {{-- 3. Tren Enam Parameter --}}
-        <section class="card-trend">
-            <div class="trend-head">
+        {{-- Kolom Kanan: Status Aktuator Wadah --}}
+        <section class="card-aktuator-wadah">
+            <div class="caw-head">
                 <div>
-                    <h2>Tren Enam Parameter</h2>
-                    <p>24 jam terakhir • {{ $selectedDevice['nama'] }}</p>
+                    <h3>Status Aktuator Wadah</h3>
+                    <p>Kendali perangkat terpasang pada {{ $selectedDevice['id'] }}</p>
                 </div>
-                <div class="ranges" id="ranges">
-                    <button class="chip active">24 jam</button>
-                    <button class="chip">7 hari</button>
-                    <button class="chip">30 hari</button>
-                </div>
+                <span class="caw-icon-bolt"><i class="bi bi-lightning-charge-fill"></i></span>
             </div>
 
-            <div class="trend-grid">
-                @foreach ($trends as $i => $t)
-                    <article class="trend-card" data-page="{{ intdiv($i, 4) }}">
-                        <div class="trend-top">
-                            <div>
-                                <span class="trend-name">{{ $t['nama'] }}</span>
-                                <div class="trend-val">{{ $t['nilai'] }}</div>
-                            </div>
-                            <span class="badge {{ $t['status'] }}"><i class="dot"></i>{{ $statusLabel[$t['status']] }}</span>
+            <div class="caw-list">
+                @foreach ($aktuators as $akt)
+                    <div class="caw-item">
+                        <div class="cawi-info">
+                            <strong>{{ $akt['nama'] }}</strong>
+                            <span>{{ $akt['sub'] }}</span>
                         </div>
-                        <div class="chart-wrap"><canvas id="chart-{{ $t['id'] }}"></canvas></div>
-                    </article>
-                @endforeach
-            </div>
-
-            <div class="trend-foot">
-                <span id="pageInfo">Halaman 1 dari 2</span>
-                <div class="pager">
-                    <button class="pg" id="pgPrev" aria-label="Sebelumnya"><i class="bi bi-chevron-left"></i></button>
-                    <button class="pg active" data-go="0">1</button>
-                    <button class="pg" data-go="1">2</button>
-                    <button class="pg" id="pgNext" aria-label="Berikutnya"><i class="bi bi-chevron-right"></i></button>
-                </div>
-            </div>
-        </section>
-
-        {{-- 4. Notifikasi Terkini --}}
-        <section class="card-notif">
-            <div class="notif-head">
-                <div>
-                    <h2>Notifikasi Terkini</h2>
-                    <p>Riwayat alert untuk {{ $selectedDevice['nama'] }}.</p>
-                </div>
-                <span class="alert-count"><i class="bi bi-exclamation-circle"></i>{{ count($alerts) }} alert</span>
-            </div>
-
-            <div class="notif-list">
-                @foreach ($alerts as $a)
-                    <div class="notif-item">
-                        <span class="notif-icon"><i class="bi bi-exclamation-circle"></i></span>
-                        <div class="notif-body">
-                            <div class="notif-row">
-                                <strong>{{ $a['tipe'] }}</strong>
-                                <span>{{ $a['lokasi'] }}</span>
-                            </div>
-                            <p>{{ $a['pesan'] }}</p>
-                        </div>
+                        <span class="badge-akt-{{ strtolower($akt['state']) }}">{{ $akt['state'] }}</span>
                     </div>
                 @endforeach
             </div>
+
+            @if (($userRole ?? session('user_role', 'teknisi')) === 'teknisi')
+                <a href="{{ route('kontrol-aktuator') }}" class="btn-open-panel-aktuator">
+                    <span>Buka Panel Kontrol 4 Aktuator & Otomasi</span>
+                </a>
+            @endif
         </section>
     </div>
 
@@ -498,7 +544,7 @@
 {{-- Script Grafik jika sedang membuka detail --}}
 @if ($selectedDevice)
 <script>
-    window.TRENDS = @json($trends);
+    window.TELEMETRI_TREND = @json($telemetriTrend);
 </script>
 <script src="{{ asset('js/dashboard.js') }}?v={{ @filemtime(public_path('js/dashboard.js')) ?: time() }}"></script>
 @endif
