@@ -145,18 +145,6 @@
                 </div>
             </div>
 
-            {{-- Tombol Toggle Tampilan (Tabel vs Kartu HP) --}}
-            <div class="view-toggle" id="viewToggle">
-                <button type="button" class="vt-btn active" data-view="table" title="Tampilan Tabel">
-                    <i class="bi bi-table"></i>
-                    <span>Tabel</span>
-                </button>
-                <button type="button" class="vt-btn" data-view="cards" title="Tampilan Kartu (Mobile)">
-                    <i class="bi bi-grid-fill"></i>
-                    <span>Kartu</span>
-                </button>
-            </div>
-
             <span class="badge-entri">{{ $totalEntri }} entri</span>
         </div>
     </div>

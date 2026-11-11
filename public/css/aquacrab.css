@@ -877,9 +877,9 @@ h1, h2, h3, p { margin: 0; }
         padding: 4px 10px;
     }
 
-    /* Tampilan Tabel Mode di HP */
+    /* Tabel di Tablet (768px s.d. 820px) tetap tampil */
     .table-wrap {
-        display: none;
+        display: block;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         width: 100%;
@@ -902,12 +902,9 @@ h1, h2, h3, p { margin: 0; }
         background: #f8fafc;
     }
 
-    /* Tampilan Kartu Sensor di HP */
+    /* Kartu di Tablet disembunyikan */
     .sensor-cards-container {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        width: 100%;
+        display: none;
     }
     .sensor-card-mobile {
         padding: 14px 12px;
@@ -6374,5 +6371,46 @@ h1, h2, h3, p { margin: 0; }
     }
     .rcc-canvas-wrap {
         height: 200px;
+    }
+}
+
+
+/* =========================================================================
+   RESPONSIVE MODE TABEL VS KARTU RIWAYAT SENSOR
+   - Laptop & Tablet (>= 768px): Mode TABEL Aja
+   - Smartphone / HP (< 768px): Mode KARTU Aja
+   ========================================================================= */
+
+/* Sembunyikan toggle manual karena mode sudah otomatis per jenis layar */
+.view-toggle {
+    display: none !important;
+}
+
+/* 1. Laptop & Tablet (>= 768px): Tabel Selalu Aktif, Kartu Selalu Sembunyi */
+@media (min-width: 768px) {
+    .card-table .table-wrap,
+    .table-wrap {
+        display: block !important;
+        overflow-x: auto !important;
+        width: 100% !important;
+    }
+    .card-table .sensor-cards-container,
+    .sensor-cards-container {
+        display: none !important;
+    }
+}
+
+/* 2. Layar HP / Smartphone (< 768px): Kartu Selalu Aktif, Tabel Selalu Sembunyi */
+@media (max-width: 767px) {
+    .card-table .table-wrap,
+    .table-wrap {
+        display: none !important;
+    }
+    .card-table .sensor-cards-container,
+    .sensor-cards-container {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 14px !important;
+        width: 100% !important;
     }
 }
