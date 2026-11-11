@@ -1,0 +1,385 @@
+/* ================= INFERENSI FUZZY CSS ================= */
+
+.fuzzy-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.fuzzy-title-group h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+}
+
+.fuzzy-title-group p {
+    color: #6b7280;
+    font-size: 14.5px;
+    margin-top: 6px;
+}
+
+/* Dropdown Unit Selector */
+.unit-selector-wrapper {
+    position: relative;
+    user-select: none;
+}
+
+.unit-selector-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 9999px;
+    padding: 9px 20px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #1f2937;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.unit-selector-btn:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+}
+
+.unit-selector-btn i {
+    font-size: 11px;
+    color: #4b5563;
+    font-weight: 700;
+    transition: transform 0.2s ease;
+}
+
+.unit-selector-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    min-width: 240px;
+    padding: 6px;
+    z-index: 50;
+    display: none;
+}
+
+.unit-selector-dropdown.show {
+    display: block;
+}
+
+.unit-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #374151;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.unit-option:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.unit-option.selected {
+    font-weight: 600;
+    color: #153024;
+    background: #eaf7cf;
+}
+
+/* Two Column Grid */
+.fuzzy-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.fuzzy-col {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Card Base */
+.fuzzy-card {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #e6e9ec;
+    padding: 24px 26px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.fuzzy-card-header h2 {
+    font-size: 18.5px;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.2px;
+}
+
+.fuzzy-card-header p {
+    color: #6b7280;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+/* ================= TAHAP 1: FUZZIFIKASI ================= */
+.param-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.param-item {
+    background: #f8fafc;
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid #f1f5f9;
+    min-height: 98px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.param-item:hover {
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
+}
+
+.param-item .param-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.param-item .param-val {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+    margin: 3px 0 5px;
+    letter-spacing: -0.3px;
+    line-height: 1.2;
+}
+
+.param-item .param-fuzzy {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: #6b7280;
+    line-height: 1.35;
+}
+
+/* ================= TAHAP 2: INDEKS SUB SISTEM ================= */
+.subsistem-list {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    margin-top: 22px;
+}
+
+.subsistem-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.sub-meta-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sub-meta-top .sub-code {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #8c9ba5;
+}
+
+.sub-meta-top .sub-val-top {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #4b5563;
+}
+
+.sub-title {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: #111827;
+    margin: 4px 0 10px;
+    letter-spacing: -0.2px;
+}
+
+.sub-progress-bar {
+    width: 100%;
+    height: 8.5px;
+    background: #edf1f3;
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.sub-progress-fill {
+    height: 100%;
+    background: #10663f; /* Deep dark green */
+    border-radius: 9999px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sub-meta-bottom {
+    text-align: right;
+    margin-top: 6px;
+}
+
+.sub-val-bottom {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #111827;
+}
+
+/* ================= TAHAP 3: ATURAN YANG AKTIF ================= */
+.rules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.rule-item {
+    background: #fde8d7; /* Peach / soft apricot */
+    border: 1px solid #fbcda6;
+    border-radius: 12px;
+    padding: 13px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: transform 0.15s ease;
+}
+
+.rule-item:hover {
+    transform: translateY(-1px);
+}
+
+.rule-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rule-top-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.rule-code {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #ea580c;
+}
+
+.rule-alpha {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #ea580c;
+}
+
+.rule-status {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #9a3412;
+}
+
+.rule-desc {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+    line-height: 1.4;
+}
+
+/* ================= TAHAP 4: AGREGASI DAN CENTROID ================= */
+.chart-box {
+    background: #fcfdfe;
+    border: 1px solid #eef2f5;
+    border-radius: 14px;
+    padding: 18px 20px 14px;
+    margin-top: 20px;
+    position: relative;
+}
+
+.fuzzy-svg-chart {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.centroid-pill-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 22px;
+}
+
+.centroid-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 9999px;
+    padding: 9px 24px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    font-size: 14px;
+    cursor: default;
+    transition: box-shadow 0.15s ease;
+}
+
+.centroid-pill:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.centroid-pill .skor-label {
+    font-weight: 600;
+    color: #111827;
+}
+
+.centroid-pill .skor-status {
+    font-weight: 700;
+    color: #111827;
+}
+
+.centroid-pill i {
+    font-size: 15px;
+    color: #111827;
+    margin-left: 2px;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1100px) {
+    .fuzzy-layout {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 680px) {
+    .param-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .fuzzy-title-group h1 {
+        font-size: 24px;
+    }
+    .fuzzy-card {
+        padding: 20px 18px;
+    }
+}
+

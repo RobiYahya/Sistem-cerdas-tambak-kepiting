@@ -12,16 +12,7 @@ class RiwayatSensorController extends Controller
     public function index()
     {
         // ===== Menu sidebar =====
-        $menus = [
-            ['label' => 'Dashboard',          'icon' => 'bi-house',            'route' => 'dashboard'],
-            ['label' => 'Riwayat Sensor',     'icon' => 'bi-clock-history',    'route' => 'riwayat-sensor'],
-            ['label' => 'Inferensi Fuzzy',    'icon' => 'bi-diagram-3',        'route' => 'inferensi-fuzzy'],
-            ['label' => 'Kontrol Aktuator',   'icon' => 'bi-sliders',          'route' => 'kontrol-aktuator'],
-            ['label' => 'Notifikasi & Alarm', 'icon' => 'bi-alarm',            'route' => 'notifikasi-alarm'],
-            ['label' => 'Kalibrasi Sensor',   'icon' => 'bi-file-earmark-text','route' => 'kalibrasi-sensor'],
-            ['label' => 'Pengaturan',         'icon' => 'bi-gear',             'route' => 'pengaturan'],
-            ['label' => 'Logout',             'icon' => 'bi-box-arrow-right',  'route' => 'logout'],
-        ];
+        $menus = $this->getSidebarMenus();
 
         // 48 entri riwayat parameter air per 15 menit (06:15 s.d. 18:00) pada 09/11/2026
         $readings = $this->getSensorHistoryData();

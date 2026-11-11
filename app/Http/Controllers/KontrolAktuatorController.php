@@ -8,15 +8,7 @@ class KontrolAktuatorController extends Controller
 {
     public function index()
     {
-        $menus = [
-            ['label' => 'Dashboard',          'icon' => 'bi-house',             'route' => 'dashboard'],
-            ['label' => 'Riwayat Sensor',     'icon' => 'bi-clock-history',     'route' => 'riwayat-sensor'],
-            ['label' => 'Inferensi Fuzzy',    'icon' => 'bi-diagram-3',         'route' => 'inferensi-fuzzy'],
-            ['label' => 'Kontrol Aktuator',   'icon' => 'bi-sliders',           'route' => 'kontrol-aktuator'],
-            ['label' => 'Notifikasi & Alarm', 'icon' => 'bi-alarm',             'route' => 'notifikasi-alarm'],
-            ['label' => 'Kalibrasi Sensor',   'icon' => 'bi-file-earmark-text', 'route' => 'kalibrasi-sensor'],
-            ['label' => 'Pengaturan',         'icon' => 'bi-gear',              'route' => 'pengaturan'],
-        ];
+        $menus = $this->getSidebarMenus();
 
         $kualitas = [
             'indeks'  => 75.3,
