@@ -119,6 +119,16 @@
     const cardTable = document.querySelector('.card-table');
     const viewButtons = document.querySelectorAll('.view-toggle .vt-btn');
 
+    // Di layar HP (<= 768px), sinkronkan tombol toggle ke mode 'Kartu' jika belum diubah user
+    if (window.innerWidth <= 768) {
+        const btnCards = document.querySelector('.view-toggle .vt-btn[data-view="cards"]');
+        const btnTable = document.querySelector('.view-toggle .vt-btn[data-view="table"]');
+        if (btnCards && btnTable) {
+            btnTable.classList.remove('active');
+            btnCards.classList.add('active');
+        }
+    }
+
     viewButtons.forEach(function (btn) {
         btn.addEventListener('click', function () {
             const mode = this.getAttribute('data-view');
