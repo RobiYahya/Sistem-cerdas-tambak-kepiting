@@ -74,13 +74,19 @@
         </div>
 
         {{-- Tombol Ekspor CSV --}}
-        <button type="button" class="btn-rsh-csv" id="btnUnduhCsv" data-url="{{ route('riwayat-sensor.csv') }}" title="Ekspor format CSV">
+        <button type="button" class="btn-rsh-csv" id="btnUnduhCsv"
+                data-url="{{ route('riwayat-sensor.csv') }}"
+                data-device="{{ $selectedDevice['id'] }}"
+                title="Ekspor format CSV sesuai rentang tanggal yang dipilih">
             <i class="bi bi-download"></i>
             <span>Ekspor CSV</span>
         </button>
 
         {{-- Tombol Unduh Laporan PDF --}}
-        <button type="button" class="btn-rsh-pdf" id="btnUnduhPdf" title="Unduh atau Cetak Laporan PDF">
+        <button type="button" class="btn-rsh-pdf" id="btnUnduhPdf"
+                data-url="{{ route('riwayat-sensor.pdf') }}"
+                data-device="{{ $selectedDevice['id'] }}"
+                title="Unduh atau Cetak Laporan PDF resmi sesuai rentang tanggal">
             <i class="bi bi-file-earmark-text"></i>
             <span>Unduh Laporan PDF</span>
         </button>
@@ -134,13 +140,13 @@
             <div class="riwayat-filters-inline">
                 <div class="date-box" id="boxStartDate">
                     <span class="date-tag">From</span>
-                    <input type="date" value="{{ $tanggalIso }}" id="filterStartDate" aria-label="Tanggal Awal">
+                    <input type="date" value="{{ $startDate ?? $tanggalIso }}" id="filterStartDate" aria-label="Tanggal Awal">
                     <i class="bi bi-calendar3"></i>
                 </div>
 
                 <div class="date-box" id="boxEndDate">
                     <span class="date-tag">To</span>
-                    <input type="date" value="{{ $tanggalIso }}" id="filterEndDate" aria-label="Tanggal Akhir">
+                    <input type="date" value="{{ $endDate ?? $tanggalIso }}" id="filterEndDate" aria-label="Tanggal Akhir">
                     <i class="bi bi-calendar3"></i>
                 </div>
             </div>

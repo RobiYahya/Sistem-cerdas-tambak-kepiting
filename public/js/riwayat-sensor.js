@@ -1,6 +1,21 @@
 (function () {
     'use strict';
 
+    // Helper untuk mengambil parameter filter yang aktif
+    function getFilterParams() {
+        const startInput = document.getElementById('filterStartDate');
+        const endInput   = document.getElementById('filterEndDate');
+        const start = startInput ? startInput.value : '2026-11-11';
+        const end   = endInput   ? endInput.value   : start;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const device = urlParams.get('device') ||
+                       document.getElementById('btnUnduhCsv')?.getAttribute('data-device') ||
+                       'AQ-BOX-A1';
+
+        return { start, end, device };
+    }
+
     // =========================================================================
     // 1. INISIALISASI GRAFIK DINAMIKA PARAMETER AIR (CHART.JS)
     // =========================================================================
@@ -153,7 +168,7 @@
                 },
                 scales: {
                     x: {
-                        display: false // Label Mulai Periode - Tengah Periode - Sekarang diletakkan di footer HTML
+                        display: false
                     },
                     ySuhu: {
                         type: 'linear',
@@ -200,6 +215,9 @@
     // 2. FILTER RENTANG WAKTU (1 Jam, 24 Jam, 7 Hari, 30 Hari)
     // =========================================================================
     const rangeButtons = document.querySelectorAll('#timeRangeFilter .rsh-pill');
+    const startInput = document.getElementById('filterStartDate');
+    const endInput   = document.getElementById('filterEndDate');
+
     rangeButtons.forEach(function (btn) {
         btn.addEventListener('click', function () {
             rangeButtons.forEach(function (b) { b.classList.remove('active'); });
@@ -218,21 +236,69 @@
                 chartInstance.data.datasets[3].data = targetSet.ph;
                 chartInstance.update();
             }
+
+            // Sesuaikan tanggal input jika tombol rentang waktu diklik
+            if (startInput && endInput) {
+                const today = '2026-11-11';
+                endInput.value = today;
+                if (range === '7d') {
+                    startInput.value = '2026-11-04';
+                } else if (range === '30d') {
+                    startInput.value = '2026-10-12';
+                } else {
+                    startInput.value = today;
+                }
+            }
         });
     });
 
     // =========================================================================
-    // 3. FITUR UNDUH LAPORAN PDF (CETAK/EXPORT FORMAL)
+    // 3. SINKRONISASI TANGGAL: RELOAD TABEL SAAT USER MEMILIH TANGGAL
+    // =========================================================================
+    function applyDateFilter() {
+        if (!startInput || !endInput) return;
+        const start = startInput.value;
+        const end   = endInput.value;
+        if (start && end) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('start_date', start);
+            url.searchParams.set('end_date', end);
+            window.location.href = url.toString();
+        }
+    }
+
+    if (startInput) startInput.addEventListener('change', applyDateFilter);
+    if (endInput)   endInput.addEventListener('change', applyDateFilter);
+
+    // =========================================================================
+    // 4. UNDUH LAPORAN PDF RESMI SESUAI RENTANG TANGGAL USER
     // =========================================================================
     const btnUnduhPdf = document.getElementById('btnUnduhPdf');
     if (btnUnduhPdf) {
         btnUnduhPdf.addEventListener('click', function () {
-            window.print();
+            const { start, end, device } = getFilterParams();
+            const baseUrl = btnUnduhPdf.getAttribute('data-url') || '/riwayat-sensor/export-pdf';
+            const targetUrl = `${baseUrl}?device=${encodeURIComponent(device)}&start_date=${encodeURIComponent(start)}&end_date=${encodeURIComponent(end)}`;
+            // Buka pratinjau dokumen PDF di tab baru untuk langsung dicetak / disimpan
+            window.open(targetUrl, '_blank');
         });
     }
 
     // =========================================================================
-    // 4. PAGINASI TABEL & KARTU (12 entri per halaman)
+    // 5. UNDUH LAPORAN CSV SESUAI RENTANG TANGGAL USER
+    // =========================================================================
+    const btnUnduhCsv = document.getElementById('btnUnduhCsv');
+    if (btnUnduhCsv) {
+        btnUnduhCsv.addEventListener('click', function () {
+            const { start, end, device } = getFilterParams();
+            const baseUrl = btnUnduhCsv.getAttribute('data-url') || '/riwayat-sensor/export-csv';
+            const targetUrl = `${baseUrl}?device=${encodeURIComponent(device)}&start_date=${encodeURIComponent(start)}&end_date=${encodeURIComponent(end)}`;
+            window.location.href = targetUrl;
+        });
+    }
+
+    // =========================================================================
+    // 6. PAGINASI TABEL & KARTU (8 entri per halaman)
     // =========================================================================
     const rows = document.querySelectorAll('.sensor-row');
     const cards = document.querySelectorAll('.sensor-card-item');
@@ -299,39 +365,7 @@
     renderPage(0);
 
     // =========================================================================
-    // 5. FITUR UNDUH CSV
-    // =========================================================================
-    const btnUnduhCsv = document.getElementById('btnUnduhCsv');
-    if (btnUnduhCsv) {
-        btnUnduhCsv.addEventListener('click', function () {
-            const csvUrl = btnUnduhCsv.getAttribute('data-url');
-            if (csvUrl) {
-                window.location.href = csvUrl;
-                return;
-            }
-
-            // Fallback unduh instan via JavaScript Blob
-            let csv = "\uFEFFTanggal;Waktu;pH;Salinitas (ppt);DO (mg/L);Suhu (°C);NTU;Level (%);Skor;Status;Aksi Aktuator\r\n";
-            rows.forEach(function (tr) {
-                const cells = tr.querySelectorAll('td');
-                const rowData = Array.from(cells).map(function (td) {
-                    return td.innerText.trim().replace(/\s+/g, ' ');
-                });
-                csv += rowData.join(';') + "\r\n";
-            });
-
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.setAttribute('download', 'riwayat_kualitas_air.csv');
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
-    }
-
-    // =========================================================================
-    // 6. INTERAKSI BUKA KALENDER
+    // 7. INTERAKSI BUKA KALENDER
     // =========================================================================
     document.querySelectorAll('.date-box').forEach(function (box) {
         const input = box.querySelector('input[type="date"]');
@@ -347,25 +381,6 @@
                 }
             } catch (err) {
                 input.focus();
-            }
-        });
-    });
-
-    // =========================================================================
-    // 7. TOGGLE TAMPILAN (TABEL VS KARTU HP)
-    // =========================================================================
-    const cardTable = document.querySelector('.card-table');
-    const viewButtons = document.querySelectorAll('.view-toggle .vt-btn');
-
-    viewButtons.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            const mode = this.getAttribute('data-view');
-            viewButtons.forEach(function (b) { b.classList.remove('active'); });
-            this.classList.add('active');
-
-            if (cardTable) {
-                cardTable.classList.remove('mode-table', 'mode-cards');
-                cardTable.classList.add('mode-' + mode);
             }
         });
     });

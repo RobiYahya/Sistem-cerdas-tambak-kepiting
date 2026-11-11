@@ -23,6 +23,7 @@ Route::post('/perangkat/delete/{id}', [DashboardController::class, 'destroyDevic
 // ===== Riwayat Sensor =====
 Route::get('/riwayat-sensor', [RiwayatSensorController::class, 'index'])->name('riwayat-sensor');
 Route::get('/riwayat-sensor/export-csv', [RiwayatSensorController::class, 'exportCsv'])->name('riwayat-sensor.csv');
+Route::get('/riwayat-sensor/export-pdf', [RiwayatSensorController::class, 'exportPdf'])->name('riwayat-sensor.pdf');
 
 // ===== Kontrol Aktuator =====
 Route::get('/kontrol-aktuator', [KontrolAktuatorController::class, 'index'])->name('kontrol-aktuator');
