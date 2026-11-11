@@ -78,9 +78,11 @@ h1, h2, h3, p { margin: 0; }
     text-decoration: none;
 }
 .menu-item i { font-size: 18px; color: #e8f1ea; flex-shrink: 0; }
+.menu-item svg { flex-shrink: 0; }
 .menu-item:hover { background: rgba(255,255,255,.07); }
-.menu-item.active { background: #ececec; color: var(--forest); }
-.menu-item.active i { color: var(--lime); }
+.menu-item.active { background: #ffffff; color: var(--forest); }
+.menu-item.active i { color: var(--forest); }
+.menu-item.active svg { stroke: var(--forest) !important; color: var(--forest) !important; }
 
 .sidebar-bottom {
     padding-top: 8px;
