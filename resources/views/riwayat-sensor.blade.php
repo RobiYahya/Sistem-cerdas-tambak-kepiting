@@ -180,7 +180,7 @@
             </thead>
             <tbody id="sensorTableBody">
                 @foreach ($readings as $index => $r)
-                    <tr class="sensor-row" data-page="{{ intdiv($index, 12) }}">
+                    <tr class="sensor-row" data-page="{{ intdiv($index, 8) }}">
                         <td class="cell-time">
                             <span class="time-main">{{ $r['waktu'] }}</span>
                             <span class="time-sub">{{ $r['tanggal_format'] }}</span>
@@ -207,7 +207,7 @@
     {{-- ================= 4.2 TAMPILAN KARTU (OPTIMAL UNTUK HP / PWA) ================= --}}
     <div class="sensor-cards-container" id="cardsViewContainer">
         @foreach ($readings as $index => $r)
-            <article class="sensor-card-mobile sensor-card-item" data-page="{{ intdiv($index, 12) }}">
+            <article class="sensor-card-mobile sensor-card-item" data-page="{{ intdiv($index, 8) }}">
                 <div class="scm-head">
                     <div class="scm-time-box">
                         <span class="scm-time">{{ $r['waktu'] }}</span>
@@ -262,7 +262,7 @@
     {{-- ================= 4.3 FOOTER & PAGINASI ================= --}}
     <div class="table-foot">
         <span class="foot-info" id="footInfo">
-            Menampilkan 1&ndash;12 dari {{ $totalEntri }} data &bull; Halaman 1 dari {{ ceil($totalEntri / 12) }}
+            Menampilkan 1&ndash;8 dari {{ $totalEntri }} data &bull; Halaman 1 dari {{ ceil($totalEntri / 8) }}
         </span>
 
         <div class="riwayat-pager">
@@ -270,7 +270,7 @@
                 <i class="bi bi-chevron-left"></i>
             </button>
 
-            @for ($p = 0; $p < ceil($totalEntri / 12); $p++)
+            @for ($p = 0; $p < ceil($totalEntri / 8); $p++)
                 <button class="pg-btn {{ $p === 0 ? 'active' : '' }}" data-page="{{ $p }}">
                     {{ $p + 1 }}
                 </button>

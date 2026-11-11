@@ -241,7 +241,7 @@
     const btnNext = document.getElementById('pgNext');
     const footInfo = document.getElementById('footInfo');
 
-    const itemsPerPage = 12;
+    const itemsPerPage = 8;
     const totalRows = rows.length;
     const totalPages = Math.ceil(totalRows / itemsPerPage) || 1;
     let currentPage = 0;
