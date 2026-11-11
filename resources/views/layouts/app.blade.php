@@ -134,6 +134,17 @@
                     </div>
                 @endif
 
+                {{-- Group: AKUN PENGGUNA (Profil Saya) --}}
+                <div class="sidebar-nav-group">
+                    <span class="sidebar-nav-heading">AKUN PENGGUNA</span>
+                    <nav class="menu">
+                        <a href="{{ route('dashboard') }}" class="menu-item">
+                            <i class="bi bi-person"></i>
+                            <span>Profil Saya</span>
+                        </a>
+                    </nav>
+                </div>
+
             @else
                 {{-- MODE GLOBAL: PERANGKAT SAYA (Sebelum Memilih Perangkat) --}}
                 <div class="sidebar-user-card">
