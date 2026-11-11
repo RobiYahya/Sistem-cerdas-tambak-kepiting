@@ -56,7 +56,7 @@
 </header>
 
 {{-- =========================================================================
-     2. TOOLBAR / SUBCARD HEADER (Rentang Waktu & Aksi Ekspor / PDF)
+     2. TOOLBAR / SUBCARD HEADER (Rentang Waktu Grafik)
      ========================================================================= --}}
 <section class="riwayat-subcard-header">
     <div class="rsh-left">
@@ -65,31 +65,13 @@
     </div>
 
     <div class="rsh-actions">
-        {{-- Filter Rentang Waktu (1 Jam, 24 Jam, 7 Hari, 30 Hari) --}}
+        {{-- Filter Rentang Waktu (1 Jam, 24 Jam, 7 Hari, 30 Hari) untuk Grafik --}}
         <div class="rsh-range-pills" id="timeRangeFilter">
             <button type="button" class="rsh-pill" data-range="1h">1 Jam</button>
             <button type="button" class="rsh-pill active" data-range="24h">24 Jam</button>
             <button type="button" class="rsh-pill" data-range="7d">7 Hari</button>
             <button type="button" class="rsh-pill" data-range="30d">30 Hari</button>
         </div>
-
-        {{-- Tombol Ekspor CSV --}}
-        <button type="button" class="btn-rsh-csv" id="btnUnduhCsv"
-                data-url="{{ route('riwayat-sensor.csv') }}"
-                data-device="{{ $selectedDevice['id'] }}"
-                title="Ekspor format CSV sesuai rentang tanggal yang dipilih">
-            <i class="bi bi-download"></i>
-            <span>Ekspor CSV</span>
-        </button>
-
-        {{-- Tombol Unduh Laporan PDF --}}
-        <button type="button" class="btn-rsh-pdf" id="btnUnduhPdf"
-                data-url="{{ route('riwayat-sensor.pdf') }}"
-                data-device="{{ $selectedDevice['id'] }}"
-                title="Unduh atau Cetak Laporan PDF resmi sesuai rentang tanggal">
-            <i class="bi bi-file-earmark-text"></i>
-            <span>Unduh Laporan PDF</span>
-        </button>
     </div>
 </section>
 
@@ -136,7 +118,7 @@
         </div>
 
         <div class="card-head-actions">
-            {{-- Filter Tanggal Minimalis --}}
+            {{-- Filter Tanggal & Tombol Download Laporan Sesuai Rentang Tanggal --}}
             <div class="riwayat-filters-inline">
                 <div class="date-box" id="boxStartDate">
                     <span class="date-tag">From</span>
@@ -149,6 +131,24 @@
                     <input type="date" value="{{ $endDate ?? $tanggalIso }}" id="filterEndDate" aria-label="Tanggal Akhir">
                     <i class="bi bi-calendar3"></i>
                 </div>
+
+                {{-- Tombol Ekspor CSV --}}
+                <button type="button" class="btn-rsh-csv" id="btnUnduhCsv"
+                        data-url="{{ route('riwayat-sensor.csv') }}"
+                        data-device="{{ $selectedDevice['id'] }}"
+                        title="Ekspor data parameter format CSV sesuai rentang tanggal yang dipilih">
+                    <i class="bi bi-download"></i>
+                    <span>Ekspor CSV</span>
+                </button>
+
+                {{-- Tombol Unduh Laporan PDF --}}
+                <button type="button" class="btn-rsh-pdf" id="btnUnduhPdf"
+                        data-url="{{ route('riwayat-sensor.pdf') }}"
+                        data-device="{{ $selectedDevice['id'] }}"
+                        title="Unduh laporan parameter format PDF sesuai rentang tanggal yang dipilih">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>Unduh Laporan PDF</span>
+                </button>
             </div>
 
             <span class="badge-entri">{{ $totalEntri }} entri</span>

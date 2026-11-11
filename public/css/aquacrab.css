@@ -1220,15 +1220,17 @@ h1, h2, h3, p { margin: 0; }
 .card-table-head {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     margin-bottom: 20px;
     gap: 16px;
+    flex-wrap: wrap;
 }
 
 .card-head-actions {
     display: flex;
     align-items: center;
     gap: 12px;
+    flex-wrap: wrap;
 }
 
 .view-toggle {
@@ -6412,5 +6414,35 @@ h1, h2, h3, p { margin: 0; }
         flex-direction: column !important;
         gap: 14px !important;
         width: 100% !important;
+    }
+    .card-table-head {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 14px !important;
+    }
+    .card-head-actions {
+        width: 100% !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+    }
+    .riwayat-filters-inline {
+        width: 100% !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+    }
+    .riwayat-filters-inline .date-box {
+        width: 100% !important;
+    }
+    .riwayat-filters-inline .btn-rsh-csv,
+    .riwayat-filters-inline .btn-rsh-pdf {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 9px 8px !important;
+        font-size: 12px !important;
+    }
+    .badge-entri {
+        align-self: flex-start !important;
     }
 }

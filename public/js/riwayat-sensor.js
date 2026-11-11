@@ -236,19 +236,6 @@
                 chartInstance.data.datasets[3].data = targetSet.ph;
                 chartInstance.update();
             }
-
-            // Sesuaikan tanggal input jika tombol rentang waktu diklik
-            if (startInput && endInput) {
-                const today = '2026-11-11';
-                endInput.value = today;
-                if (range === '7d') {
-                    startInput.value = '2026-11-04';
-                } else if (range === '30d') {
-                    startInput.value = '2026-10-12';
-                } else {
-                    startInput.value = today;
-                }
-            }
         });
     });
 
