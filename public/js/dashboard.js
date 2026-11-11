@@ -1,113 +1,92 @@
 (function () {
     'use strict';
 
-    // ============ 1. GRAFIK TREN (Chart.js, data dummy dari controller) ============
-    const hours = Array.from({ length: 25 }, (_, i) => String(i).padStart(2, '0'));
+    const canvas = document.getElementById('chartTrenTelemetri');
+    if (!canvas) return;
 
-    (window.TRENDS || []).forEach(function (t) {
-        const canvas = document.getElementById('chart-' + t.id);
-        if (!canvas) return;
+    const trendData = window.TELEMETRI_TREND || {
+        labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', 'Sekarang'],
+        datasets: [
+            { id: 'ph', label: 'pH (8,48)', data: [6.2, 6.4, 6.4, 6.5, 6.6, 6.1, 6.3], borderColor: '#10b981' },
+            { id: 'do', label: 'DO (5,40 mg/L)', data: [6.9, 7.3, 7.5, 7.4, 7.3, 7.6, 7.7], borderColor: '#0284c7' },
+            { id: 'salinitas', label: 'Salinitas (26,4 ppt)', data: [7.5, 7.4, 7.3, 7.2, 7.1, 7.3, 7.6], borderColor: '#8b5cf6' },
+            { id: 'suhu', label: 'Suhu (32,4 °C)', data: [7.7, 7.8, 7.7, 7.5, 8.4, 7.2, 8.2], borderColor: '#f97316' },
+        ]
+    };
 
-        new Chart(canvas, {
-            type: 'line',
-            data: {
-                labels: hours,
-                datasets: [{
-                    data: t.data,
-                    borderColor: '#8cc63f',
-                    borderWidth: 2.5,
-                    tension: 0.42,
-                    pointRadius: 0,
-                    pointHoverRadius: 4,
-                    pointHoverBackgroundColor: '#8cc63f',
-                    fill: false,
-                }],
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: '#153024',
-                        titleFont: { family: 'Poppins' },
-                        bodyFont: { family: 'Poppins' },
-                        displayColors: false,
-                        callbacks: { title: (items) => 'Jam ' + items[0].label + ':00' },
-                    },
-                },
-                scales: {
-                    x: {
-                        grid: { display: false },
-                        border: { color: '#d9dde0' },
-                        ticks: {
-                            color: '#7b848e',
-                            font: { family: 'Poppins', size: 12 },
-                            autoSkip: false,
-                            maxRotation: 0,
-                            // tampilkan label tiap 4 jam: 00, 04, 08, ... 24
-                            callback: function (val, idx) { return idx % 4 === 0 ? this.getLabelForValue(val) : ''; },
-                        },
-                    },
-                    y: {
-                        min: t.min,
-                        max: t.max,
-                        grid: { display: false },
-                        border: { display: false },
-                        ticks: {
-                            color: '#7b848e',
-                            font: { family: 'Poppins', size: 12 },
-                            stepSize: t.step,
-                            padding: 8,
-                        },
-                    },
-                },
-            },
-        });
+    const allDatasets = trendData.datasets.map(function (ds) {
+        return {
+            label: ds.label,
+            data: ds.data,
+            borderColor: ds.borderColor,
+            backgroundColor: 'transparent',
+            borderWidth: 2.8,
+            tension: 0.45,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: ds.borderColor,
+            pointHoverBorderColor: '#ffffff',
+            pointHoverBorderWidth: 2,
+            id: ds.id,
+        };
     });
 
-    // ============ 2. PAGINATION TREN (4 grafik per halaman) ============
-    const trendCards = document.querySelectorAll('.trend-card');
-    const pgButtons  = document.querySelectorAll('.pg[data-go]');
-    const pageInfo   = document.getElementById('pageInfo');
-    const totalPages = Math.ceil(trendCards.length / 4);
-    let trendPage = 0;
+    const chart = new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: trendData.labels,
+            datasets: allDatasets,
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#0f172a',
+                    titleFont: { family: 'Poppins', size: 12, weight: '600' },
+                    bodyFont: { family: 'Poppins', size: 12 },
+                    padding: 10,
+                    cornerRadius: 8,
+                },
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    border: { color: '#e2e8f0' },
+                    ticks: {
+                        color: '#64748b',
+                        font: { family: 'Poppins', size: 11.5 },
+                    },
+                },
+                y: {
+                    grid: { color: '#f1f5f9' },
+                    border: { display: false },
+                    ticks: {
+                        color: '#64748b',
+                        font: { family: 'Poppins', size: 11.5 },
+                        padding: 8,
+                    },
+                },
+            },
+        },
+    });
 
-    function showTrendPage(p) {
-        trendPage = Math.max(0, Math.min(totalPages - 1, p));
-        trendCards.forEach((c) => { c.hidden = Number(c.dataset.page) !== trendPage; });
-        pgButtons.forEach((b) => b.classList.toggle('active', Number(b.dataset.go) === trendPage));
-        pageInfo.textContent = 'Halaman ' + (trendPage + 1) + ' dari ' + totalPages;
-        // chart yang sebelumnya tersembunyi perlu dihitung ulang ukurannya
-        window.dispatchEvent(new Event('resize'));
-    }
-    pgButtons.forEach((b) => b.addEventListener('click', () => showTrendPage(Number(b.dataset.go))));
-    document.getElementById('pgPrev').addEventListener('click', () => showTrendPage(trendPage - 1));
-    document.getElementById('pgNext').addEventListener('click', () => showTrendPage(trendPage + 1));
-    showTrendPage(0);
+    // Filter Buttons [Semua] [pH] [DO] [Salinitas] [Suhu]
+    const filterBtns = document.querySelectorAll('#chartFilterTabs .cct-filter-btn');
+    filterBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            filterBtns.forEach(function (b) { b.classList.remove('active'); });
+            this.classList.add('active');
 
-    // ============ 3. KARTU PARAMETER GESER (2 kartu per halaman) ============
-    const paramCards = document.querySelectorAll('.param-card');
-    const paramDots  = document.querySelectorAll('#paramDots i');
-    const paramPages = Math.ceil(paramCards.length / 2);
-    let paramPage = 0;
-
-    function showParamPage(p) {
-        paramPage = (p + paramPages) % paramPages; // berputar
-        paramCards.forEach((c) => { c.hidden = Number(c.dataset.page) !== paramPage; });
-        paramDots.forEach((d, i) => d.classList.toggle('on', i === paramPage));
-    }
-    document.getElementById('paramPrev').addEventListener('click', () => showParamPage(paramPage - 1));
-    document.getElementById('paramNext').addEventListener('click', () => showParamPage(paramPage + 1));
-    showParamPage(0);
-
-    // ============ 4. TOMBOL RENTANG WAKTU (24 jam / 7 hari / 30 hari) ============
-    // Masih tampilan saja: hanya mengganti status aktif. Nanti dihubungkan ke API/database.
-    document.querySelectorAll('#ranges .chip').forEach(function (chip) {
-        chip.addEventListener('click', function () {
-            document.querySelectorAll('#ranges .chip').forEach((c) => c.classList.remove('active'));
-            chip.classList.add('active');
+            const filter = this.getAttribute('data-filter');
+            if (filter === 'all') {
+                chart.data.datasets = allDatasets;
+            } else {
+                chart.data.datasets = allDatasets.filter(function (ds) { return ds.id === filter; });
+            }
+            chart.update();
         });
     });
 })();

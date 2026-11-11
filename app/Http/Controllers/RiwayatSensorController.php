@@ -11,17 +11,34 @@ class RiwayatSensorController extends Controller
      */
     public function index()
     {
-        // ===== Menu sidebar =====
+        // Proteksi: Jika belum login, harus ke halaman login dulu!
+        if (! session('is_logged_in', false)) {
+            return redirect()->route('login');
+        }
+
+        // Proteksi: Jika belum ada perangkat terdaftar, arahkan ke dashboard
+        if (! session('has_device', false)) {
+            return redirect()->route('dashboard')->with('pesan_warning', 'Pilih perangkat tambak terlebih dahulu untuk melihat data riwayat sensor.');
+        }
+
+        $selectedId = session('selected_device_id');
+        $dashboardUrl = $selectedId ? route('dashboard', ['device' => $selectedId]) : route('dashboard');
+        $userRole = session('user_role', 'teknisi');
+
+        // ===== Menu sidebar operasional perangkat terpilih (RBAC) =====
         $menus = [
-            ['label' => 'Dashboard',          'icon' => 'bi-house',            'route' => 'dashboard'],
-            ['label' => 'Riwayat Sensor',     'icon' => 'bi-clock-history',    'route' => 'riwayat-sensor'],
-            ['label' => 'Inferensi Fuzzy',    'icon' => 'bi-diagram-3',        'route' => 'inferensi-fuzzy'],
-            ['label' => 'Kontrol Aktuator',   'icon' => 'bi-sliders',          'route' => 'kontrol-aktuator'],
-            ['label' => 'Notifikasi & Alarm', 'icon' => 'bi-alarm',            'route' => 'notifikasi-alarm'],
-            ['label' => 'Kalibrasi Sensor',   'icon' => 'bi-file-earmark-text','route' => 'kalibrasi-sensor'],
-            ['label' => 'Pengaturan',         'icon' => 'bi-gear',             'route' => 'pengaturan'],
-            ['label' => 'Logout',             'icon' => 'bi-box-arrow-right',  'route' => 'logout'],
+            ['label' => 'Perangkat Saya',   'icon' => 'bi-hdd-network',    'url' => route('dashboard'), 'active' => false],
+            ['label' => 'Dashboard',        'icon' => 'bi-speedometer2',  'url' => $dashboardUrl,      'active' => false],
+            ['label' => 'Riwayat Sensor',   'icon' => 'bi-clock-history', 'url' => route('riwayat-sensor'), 'active' => true],
+            ['label' => 'Inferensi Fuzzy',  'icon' => 'bi-diagram-3',     'url' => route('inferensi-fuzzy'), 'active' => false],
         ];
+
+        // Kontrol Aktuator hanya untuk Teknisi
+        if ($userRole === 'teknisi') {
+            $menus[] = ['label' => 'Kontrol Aktuator', 'icon' => 'bi-sliders', 'url' => route('kontrol-aktuator'), 'active' => false];
+        }
+
+        $menus[] = ['label' => 'Logout', 'icon' => 'bi-box-arrow-right', 'url' => route('logout'), 'active' => false];
 
         // 48 entri riwayat parameter air per 15 menit (06:15 s.d. 18:00) pada 09/11/2026
         $readings = $this->getSensorHistoryData();
