@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RiwayatSensorController;
 use App\Http\Controllers\KontrolAktuatorController;
+use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\InferensiFuzzyController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,9 @@ Route::get('/inferensi-fuzzy', [InferensiFuzzyController::class, 'index'])->name
 
 // ===== Kontrol Aktuator =====
 Route::get('/kontrol-aktuator', [KontrolAktuatorController::class, 'index'])->name('kontrol-aktuator');
+
+// ===== Pusat Notifikasi & Peringatan Wadah =====
+Route::get('/notifikasi-wadah', [NotifikasiController::class, 'index'])->name('notifikasi-wadah');
 
 // Menu lain masih placeholder (hanya tampilan). Arahkan ke dashboard dulu.
 foreach (['notifikasi-alarm', 'kalibrasi-sensor', 'pengaturan'] as $slug) {

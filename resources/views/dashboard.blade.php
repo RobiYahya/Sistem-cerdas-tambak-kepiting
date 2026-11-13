@@ -36,10 +36,10 @@
                 <p class="wadah-subtitle-detail">Pemantauan telemetri real-time 6 parameter dan status kesehatan kepiting pada {{ $selectedDevice['nama'] }}.</p>
             </div>
             <div class="wadah-head-actions">
-                <button type="button" class="btn-notif-bell" title="Notifikasi Wadah (2 Baru)">
+                <a href="{{ route('notifikasi-wadah') }}" class="btn-notif-bell" title="Notifikasi Wadah (2 Baru)">
                     <i class="bi bi-bell"></i>
                     <span class="notif-badge-dot">2</span>
-                </button>
+                </a>
                 <div class="header-device-selector-pill">
                     <i class="bi bi-stack hdsp-icon"></i>
                     <span class="hdsp-name">{{ $selectedDevice['nama'] }}</span>
