@@ -172,6 +172,36 @@
                     </nav>
                 </div>
             @endif
+            {{-- Navigasi Menu Sidebar: AKUN PENGGUNA --}}
+            <div class="sidebar-nav-group">
+                <span class="sidebar-nav-heading">AKUN PENGGUNA</span>
+                <nav class="menu">
+                    <a href="{{ route('dashboard') }}" class="menu-item">
+                        <i class="bi bi-person"></i>
+                        <span>Profil Petambak</span>
+                    </a>
+                </nav>
+            </div>
+                    <div class="brand-name">AquaCrab</div>
+                    <div class="brand-sub">Water Monitoring System</div>
+                </div>
+            </div>
+
+            <nav class="menu">
+                @foreach ($menus as $menu)
+                    @if ($menu['route'] !== 'logout')
+                        <a href="{{ route($menu['route']) }}"
+                           class="menu-item {{ request()->routeIs($menu['route']) ? 'active' : '' }}">
+                            @if (!empty($menu['svg']))
+                                {!! $menu['svg'] !!}
+                            @else
+                                <i class="bi {{ $menu['icon'] }}"></i>
+                            @endif
+                            <span>{{ $menu['label'] }}</span>
+                        </a>
+                    @endif
+                @endforeach
+            </nav>
         </div>
 
         <div class="sidebar-bottom">
@@ -257,6 +287,31 @@
                 <span>{{ $label }}</span>
             </a>
         @endforeach
+        <a href="{{ route('dashboard') }}" class="mobile-nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+            <i class="bi bi-house"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="{{ route('riwayat-sensor') }}" class="mobile-nav-item {{ request()->routeIs('riwayat-sensor') ? 'active' : '' }}">
+            <i class="bi bi-clock-history"></i>
+            <span>Riwayat</span>
+        </a>
+        <a href="{{ route('inferensi-fuzzy') }}" class="mobile-nav-item {{ request()->routeIs('inferensi-fuzzy') ? 'active' : '' }}">
+            <i class="bi bi-circle-half"></i>
+            <span>Fuzzy</span>
+        </a>
+        <a href="{{ route('kontrol-aktuator') }}" class="mobile-nav-item {{ request()->routeIs('kontrol-aktuator') ? 'active' : '' }}">
+            <i class="bi bi-sliders"></i>
+            <span>Aktuator</span>
+        </a>
+        {{-- Di-comment karena belum memiliki halaman fisik: --}}
+        {{-- <a href="{{ route('notifikasi-alarm') }}" class="mobile-nav-item {{ request()->routeIs('notifikasi-alarm') ? 'active' : '' }}">
+            <i class="bi bi-alarm"></i>
+            <span>Notifikasi</span>
+        </a> --}}
+        {{-- <a href="{{ route('pengaturan') }}" class="mobile-nav-item {{ request()->routeIs('pengaturan') ? 'active' : '' }}">
+            <i class="bi bi-gear"></i>
+            <span>Pengaturan</span>
+        </a> --}}
     </nav>
 </div>
 

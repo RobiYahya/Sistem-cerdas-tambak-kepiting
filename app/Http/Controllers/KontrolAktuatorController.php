@@ -35,6 +35,7 @@ class KontrolAktuatorController extends Controller
             ['label' => 'Kontrol Aktuator', 'icon' => 'bi-sliders',       'url' => route('kontrol-aktuator'), 'active' => true],
             ['label' => 'Logout',           'icon' => 'bi-box-arrow-right', 'url' => route('logout'),   'active' => false],
         ];
+        $menus = $this->getSidebarMenus();
 
         $kualitas = [
             'indeks'  => 75.3,
