@@ -32,6 +32,8 @@ class RiwayatSensorController extends Controller
             ['label' => 'Riwayat Sensor',   'icon' => 'bi-clock-history', 'url' => route('riwayat-sensor'), 'active' => true],
             ['label' => 'Inferensi Fuzzy',  'icon' => 'bi-diagram-3',     'url' => route('inferensi-fuzzy'), 'active' => false],
         ];
+        // ===== Menu sidebar =====
+        $menus = $this->getSidebarMenus();
 
         // Kontrol Aktuator hanya untuk Teknisi
         if ($userRole === 'teknisi') {

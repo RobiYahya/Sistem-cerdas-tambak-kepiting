@@ -77,6 +77,8 @@ class DashboardController extends Controller
                 ['label' => 'Riwayat Sensor',   'icon' => 'bi-clock-history',  'url' => route('riwayat-sensor'), 'active' => false],
                 ['label' => 'Inferensi Fuzzy',  'icon' => 'bi-diagram-3',      'url' => route('inferensi-fuzzy'), 'active' => false],
             ];
+        // ===== Menu sidebar =====
+        $menus = $this->getSidebarMenus();
 
             // Menu khusus Teknisi: Kontrol Aktuator manual
             if ($userRole === 'teknisi') {
