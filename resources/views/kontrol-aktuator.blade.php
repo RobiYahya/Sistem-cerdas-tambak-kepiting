@@ -2,9 +2,6 @@
 
 @section('title', 'Kontrol Aktuator')
 
-@push('styles')
-<link rel="stylesheet" href="{{ asset('css/kontrol-aktuator.css') }}">
-@endpush
 
 @section('content')
 {{-- ===== HEADER ===== --}}
