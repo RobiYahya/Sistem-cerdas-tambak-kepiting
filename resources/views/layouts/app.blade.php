@@ -38,46 +38,140 @@
                 $userAvatar = $isTeknisi ? 'TK' : 'NL';
                 $roleLabel = $isTeknisi ? 'TEKNISI' : 'NELAYAN';
             @endphp
-            <div class="sidebar-user-card">
-                <div class="suc-top">
-                    <div class="suc-avatar">{{ $userAvatar }}</div>
-                    <div class="suc-info">
-                        <strong class="suc-name">{{ $userName }}</strong>
-                        <span class="suc-email" title="{{ $isTeknisi ? 'budi.santoso@aquacrab.io' : 'robi.petambak@aquacrab.io' }}">{{ $userEmail }}</span>
+
+            @if ($selectedDevice ?? null)
+                {{-- MODE MONITORING WADAH TERPILIH (Sesuai Mockup Gambar media_1794371967886_c2c1a0e9.png) --}}
+                <div class="sidebar-device-box">
+                    <a href="{{ route('dashboard') }}" class="btn-sidebar-back" title="Kembali ke Daftar Perangkat">
+                        <i class="bi bi-arrow-left"></i>
+                        <span>Kembali ke Perangkat</span>
+                    </a>
+
+                    <div class="sidebar-device-divider"></div>
+
+                    <div class="sadc-top">
+                        <span class="sadc-lbl">Wadah Aktif:</span>
+                        <span class="sadc-status-online"><i class="dot"></i> ONLINE</span>
+                    </div>
+
+                    {{-- 1 Card Pemilih Wadah --}}
+                    <div class="sidebar-active-device-card" title="Klik untuk beralih jerigen budidaya">
+                        <div class="sadc-name-row">
+                            <strong class="sadc-name">{{ Str::limit($selectedDevice['nama'], 20) }}</strong>
+                            <i class="bi bi-chevron-down sadc-chevron"></i>
+                        </div>
+                        <div class="sadc-meta-row">
+                            <span class="sadc-code">{{ $selectedDevice['id'] }}</span>
+                            <span class="sadc-dot">&bull;</span>
+                            <span class="sadc-skor">Skor {{ number_format(floatval(str_replace(',', '.', $selectedDevice['indeks'] ?? 75.3)), 1, ',', '.') }}</span>
+                        </div>
+                        <select class="sadc-select-overlay" onchange="window.location.href='{{ route('dashboard') }}?device=' + this.value" title="Pilih Jerigen Budidaya">
+                            @foreach ($devices ?? [] as $dev)
+                                <option value="{{ $dev['id'] }}" {{ $dev['id'] === $selectedDevice['id'] ? 'selected' : '' }}>
+                                    {{ $dev['nama'] }} ({{ $dev['id'] }})
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
-                <div class="suc-bottom">
-                    <span class="suc-role-pill"><i class="dot"></i> {{ $roleLabel }}</span>
-                    <a href="{{ route('switch-role') }}" class="suc-switch-role" title="Beralih peran: Nelayan / Teknisi" style="text-decoration: none;">
-                        <i class="bi bi-arrow-repeat"></i> Ganti Peran
-                    </a>
+
+                {{-- Group 1: MONITORING WADAH --}}
+                <div class="sidebar-nav-group">
+                    <span class="sidebar-nav-heading">MONITORING WADAH</span>
+                    <nav class="menu">
+                        <a href="{{ route('dashboard', ['device' => $selectedDevice['id']]) }}" class="menu-item active">
+                            <i class="bi bi-grid-fill"></i>
+                            <span>Dashboard Wadah</span>
+                        </a>
+                        <a href="{{ route('inferensi-fuzzy') }}" class="menu-item">
+                            <i class="bi bi-water"></i>
+                            <span>Analisis Kualitas Air</span>
+                        </a>
+                        <a href="{{ route('riwayat-sensor') }}" class="menu-item">
+                            <i class="bi bi-file-earmark-text"></i>
+                            <span>Riwayat & Laporan</span>
+                        </a>
+                        <a href="#" class="menu-item menu-item-badge">
+                            <i class="bi bi-bell"></i>
+                            <span>Notifikasi Wadah</span>
+                            <span class="menu-badge-red">2</span>
+                        </a>
+                    </nav>
                 </div>
-            </div>
 
-            {{-- Navigasi Menu Sidebar: DAFTAR PERANGKAT --}}
-            <div class="sidebar-nav-group">
-                <span class="sidebar-nav-heading">DAFTAR PERANGKAT</span>
-                <nav class="menu">
-                    @foreach ($menus as $menu)
-                        @if (($menu['route'] ?? '') !== 'logout' && ($menu['label'] ?? '') !== 'Logout')
-                            @php
-                                $url = $menu['url'] ?? (isset($menu['route']) ? route($menu['route']) : '#');
-                                $isActive = false;
-                                if (isset($menu['active'])) {
-                                    $isActive = $menu['active'];
-                                } elseif (isset($menu['route'])) {
-                                    $isActive = request()->routeIs($menu['route']);
-                                }
-                            @endphp
-                            <a href="{{ $url }}" class="menu-item {{ $isActive ? 'active' : '' }}">
-                                <i class="bi {{ $menu['icon'] }}"></i>
-                                <span>{{ $menu['label'] }}</span>
+                {{-- Group 2 & 3: KHUSUS TEKNISI (KENDALI & KONFIGURASI) --}}
+                @if ($isTeknisi)
+                    <div class="sidebar-nav-group">
+                        <span class="sidebar-nav-heading">KENDALI & INFERENSI</span>
+                        <nav class="menu">
+                            <a href="{{ route('kontrol-aktuator') }}" class="menu-item">
+                                <i class="bi bi-sliders"></i>
+                                <span>Kontrol Aktuator</span>
                             </a>
-                        @endif
-                    @endforeach
-                </nav>
-            </div>
+                            <a href="{{ route('inferensi-fuzzy') }}" class="menu-item">
+                                <i class="bi bi-bezier2"></i>
+                                <span>Analisis Fuzzy Detail</span>
+                            </a>
+                        </nav>
+                    </div>
 
+                    <div class="sidebar-nav-group">
+                        <span class="sidebar-nav-heading">KONFIGURASI & KALIBRASI</span>
+                        <nav class="menu">
+                            <a href="{{ route('kalibrasi-sensor') }}" class="menu-item">
+                                <i class="bi bi-bullseye"></i>
+                                <span>Kalibrasi Sensor</span>
+                            </a>
+                            <a href="{{ route('pengaturan') }}" class="menu-item">
+                                <i class="bi bi-gear"></i>
+                                <span>Konfigurasi Fuzzy</span>
+                            </a>
+                            <a href="#" class="menu-item">
+                                <i class="bi bi-cpu"></i>
+                                <span>Diagnostik Hardware</span>
+                            </a>
+                        </nav>
+                    </div>
+                @endif
+
+            @else
+                {{-- MODE GLOBAL: PERANGKAT SAYA (Sebelum Memilih Perangkat) --}}
+                <div class="sidebar-user-card">
+                    <div class="suc-top">
+                        <div class="suc-avatar">{{ $userAvatar }}</div>
+                        <div class="suc-info">
+                            <strong class="suc-name">{{ $userName }}</strong>
+                            <span class="suc-email" title="{{ $isTeknisi ? 'budi.santoso@aquacrab.io' : 'robi.petambak@aquacrab.io' }}">{{ $userEmail }}</span>
+                        </div>
+                    </div>
+                    <div class="suc-bottom">
+                        <span class="suc-role-pill"><i class="dot"></i> {{ $roleLabel }}</span>
+                        <a href="{{ route('switch-role') }}" class="suc-switch-role" title="Beralih peran: Nelayan / Teknisi" style="text-decoration: none;">
+                            <i class="bi bi-arrow-repeat"></i> Ganti Peran
+                        </a>
+                    </div>
+                </div>
+
+                <div class="sidebar-nav-group">
+                    <span class="sidebar-nav-heading">DAFTAR PERANGKAT</span>
+                    <nav class="menu">
+                        <a href="{{ route('dashboard') }}" class="menu-item active">
+                            <i class="bi bi-hdd-network"></i>
+                            <span>Perangkat Saya</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <div class="sidebar-nav-group">
+                    <span class="sidebar-nav-heading">AKUN PENGGUNA</span>
+                    <nav class="menu">
+                        <a href="{{ route('dashboard') }}" class="menu-item">
+                            <i class="bi bi-person"></i>
+                            <span>Profil Petambak</span>
+                        </a>
+                    </nav>
+                </div>
+            @endif
             {{-- Navigasi Menu Sidebar: AKUN PENGGUNA --}}
             <div class="sidebar-nav-group">
                 <span class="sidebar-nav-heading">AKUN PENGGUNA</span>
@@ -222,6 +316,32 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const trigger = document.getElementById('sidebarDeviceTrigger');
+    const dropdown = document.getElementById('sidebarDeviceDropdown');
+    if (trigger && dropdown) {
+        trigger.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const isOpen = dropdown.classList.contains('open');
+            if (isOpen) {
+                dropdown.classList.remove('open');
+                trigger.classList.remove('open');
+            } else {
+                dropdown.classList.add('open');
+                trigger.classList.add('open');
+            }
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!trigger.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('open');
+                trigger.classList.remove('open');
+            }
+        });
+    }
+});
+</script>
 @stack('scripts')
 </body>
 </html>
